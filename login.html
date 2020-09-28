@@ -10,14 +10,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
 
 
-    <script>
+    <script> // Facebook Login
         var checkLoginStatus = function (response) {
             console.log(response);
+
             // statusChangeCallback(response);
-            if (response.status === 'connected') {
+            if (response.status === 'connected') { // 로그인 되었을 때
                 document.querySelector('#authBtn').value = 'Logout';
-            } else {
+                FB.api('me', function (resq) {
+                    document.querySelector('#name').innerHTML = resq.name + '님 환영합니다';
+                });
+            } else {    // 로그인 안됬을 때
                 document.querySelector('#authBtn').value = 'Login';
+                document.querySelector('#name').innerHTML = '';
             }
         }
 
@@ -140,12 +145,28 @@
         <div class="wel1">WELCOME<br></div>
         <div class="wel2">킥킥<br></div>
         <div class="btn">
-            
+            <a class="btn1">카카오로 로그인</a><br>
             <a class="btn2">네이버로 로그인</a><br>
             <a class="btn3">페이스북으로 로그인</a><br>
         </div>
 
-f
+
+        <input class="btn3" type="button" id="authBtn" value="checking..." onclick="
+            if(this.value === 'Login'){
+            // now logout 일 때
+            FB.login(function(res){
+                console.log('login =>', res);
+                checkLoginStatus(res);
+            });
+            } else {
+            // now login 일 때
+            FB.logout(function(res){
+                console.log('logout =>', res);
+                checkLoginStatus(res);
+            });
+            }
+        ">
+         <div id="name"> </div>
 
     </div>
 </body>

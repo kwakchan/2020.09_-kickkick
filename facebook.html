@@ -9,17 +9,18 @@
   <script>
     var checkLoginStatus = function(response) {
       console.log(response);
+
       // statusChangeCallback(response);
-      if(response.status === 'connected'){
+      if(response.status === 'connected'){ // 로그인이 될때 
         document.querySelector('#authBtn').value = 'Logout';
-      } else {
+      } else { // 로그인이 되지 않았을 때
         document.querySelector('#authBtn').value = 'Login';
       }
     }
     
     window.fbAsyncInit = function() {
     FB.init({
-      appId      : '1014875612351860',
+      appId      : '1014875612351860', // 자신의 고유 Facebook에서 발급받은 ID값을 넣는다
       cookie     : true,  // enable cookies to allow the server to access 
                           // the session
       xfbml      : true,  // parse social plugins on this page
@@ -51,7 +52,9 @@
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
   </script>
+
 </head>
+
 <body>
   <input type="button" id="authBtn" value="checking..." onclick="
       if(this.value === 'Login'){
