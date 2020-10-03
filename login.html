@@ -20,7 +20,7 @@
 		}
 	  }
 	  
-	  window.fbAsyncInit = function() {
+	  window.fbAsyncInit = function() { //페이스북 SDK 초기화
 	  FB.init({
 		appId      : '369813880724926',
 		cookie     : true,  // enable cookies to allow the server to access 
@@ -134,7 +134,7 @@
 			<input class="btn3" type="button" id="authBtn" value="checking..." onclick="
 				if(this.value === 'Login'){
 				// now logout
-				FB.login(function(res){
+				FB.login(function(res){ //페이스북 로그인 버튼을 눌렀을 때의 루틴
 					console.log('login =>', res);
 					checkLoginStatus(res);
 				});
