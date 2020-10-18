@@ -13,8 +13,8 @@ var db = mysql.createConnection({
   database:'opentutorials'
 });
 db.connect();
- 
- 
+
+
 var app = http.createServer(function(request,response){
     var _url = request.url;
     var queryData = url.parse(_url, true).query;
