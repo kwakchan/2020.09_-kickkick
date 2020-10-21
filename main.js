@@ -18,18 +18,18 @@ var app = http.createServer(function(request,response){
     console.log(queryData); // query string 값
     console.log(pathname); 
 
-  // [로그인 Login]
-  if(pathname === '/login'){
-    var login = require('./lib/login');
-    response.writeHead(200);
-    response.end(login);
-  }
-
   // [로딩 Loading]
-  else if(pathname === '/loading'){
+  if(pathname === '/'){
     var loading = require('./lib/loading');
     response.writeHead(200);
     response.end(loading);
+  }
+
+  // [로그인 Login]
+  else if(pathname === '/login'){
+    var login = require('./lib/login');
+    response.writeHead(200);
+    response.end(login);
   }
 
   // [경기매칭 matching]
