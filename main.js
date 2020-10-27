@@ -1,6 +1,7 @@
 var http = require('http');
 var url = require('url');
-var ejs = require('ejs');
+var qs = require('querystring');
+
 var matching_template = require('./lib/matching.js');
 var matching_make_template = require('./lib/matching_make.js');
 var matching_management_template = require('./lib/matching_management.js');
@@ -54,6 +55,29 @@ var app = http.createServer(function(request,response){
         response.writeHead(200);
         response.end(matching_make);
       }
+
+      //방만들기 프로세스
+      else if(pathname === '/create_process'){
+        request.on('end', function(){
+          var post = qs.parse(body);
+          console.log(post);
+          // var title = require.query.form_title;
+          // var date = require.query.form_date;
+          // var time = require.query.form_time;
+          // var content = require.query.form_content;
+          sql = "INSERT INTO matching (id, title, date, time, content) VALUES(6,?,?,?,?);";
+          db.query(sql,[post.form_title, post.form_date, post.form_time, post.form_content],function(error, result){
+              if(error){
+                throw error;
+              }
+              console.log(result.insertId)
+              response.writeHead(302, {Location: `/matching`});
+              response.end();
+            }
+          )
+        });    
+      }
+      
       //관리(방수정과 삭제)
       else if(pathname === '/matching/matching_management'){
         db.query(`SELECT * FROM matching where id=?`, [queryData.id] , function(error2, topic){
@@ -115,22 +139,22 @@ var app = http.createServer(function(request,response){
               <form action="#.php">
                 <tr>
                   <td colspan="2"> 제목</td>
-                  <td colspan="2"> <input type="text" class=form value="${topic.title}"> </td>
+                  <td colspan="2"> <input type="text" class=form value="${topic[0].title}"> </td>
                 </tr>
 
                 <tr>
                   <td colspan="2">날짜</td>
-                  <td colspan="2"> <input type="date" class=form value=""> </td>
+                  <td colspan="2"> <input type="date" class=form value="${topic[0].date}"> </td>
                 </tr>
 
                 <tr>
                   <td colspan="2">시간</td>
-                  <td colspan="2"> <input type="time" class=form> </td>
+                  <td colspan="2"> <input type="time" class=form value="${topic[0].time}"> </td>
                 </tr>
 
                 <tr>
                   <td colspan="2">내용</td>
-                  <td colspan="2"> <input type="text" class=form> </td>
+                  <td colspan="2"> <input type="text" class=form value="${topic[0].content}"> </td>
                 </tr>
 
                 <tr>
