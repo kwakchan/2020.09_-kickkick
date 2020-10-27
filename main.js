@@ -56,11 +56,12 @@ var app = http.createServer(function(request,response){
       }
       //관리(방수정과 삭제)
       else if(pathname === '/matching/matching_management'){
-        db.query(`SELECT * FROM matching where id=1`, function(error2, topics){
+        db.query(`SELECT * FROM matching where id=?`, [queryData.id] , function(error2, topic){
         if(error2){
           throw error;
         }
-        var matching_management = `
+        var matching_management = // matching_management_template.HTML();
+        `
         <!DOCTYPE html>
         <html>
         <meta charset="utf-8">
@@ -113,13 +114,13 @@ var app = http.createServer(function(request,response){
             <table id="table"> 
               <form action="#.php">
                 <tr>
-                  <td colspan="2"> 제목 </td>
-                  <td colspan="2"> <input type="text" class=form value="${topics.title}"> </td>
+                  <td colspan="2"> 제목</td>
+                  <td colspan="2"> <input type="text" class=form value="${topic.title}"> </td>
                 </tr>
 
                 <tr>
                   <td colspan="2">날짜</td>
-                  <td colspan="2"> <input type="date" class=form> </td>
+                  <td colspan="2"> <input type="date" class=form value=""> </td>
                 </tr>
 
                 <tr>
@@ -198,36 +199,6 @@ var app = http.createServer(function(request,response){
     response.writeHead(200);
     response.end(user);
   }  
-
-  // db test
-  else if(pathname === '/test'){
-    
-    var sql = 'SELECT * FROM matching';
-    db.query(sql, function (err, rows, fields) { // rows: table 가로행, fields: table 세로열
-      if(err){
-        console.log(err);
-      } 
-      else {
-        for(var i = 0; i < rows.length; i++){
-          console.log(rows[i].title + " : " + rows[i].id + rows[i].title + rows[i].date + rows[i].time + rows[i].content);
-        }
-        var html = `
-          <!Doctype html>
-          <html>
-          <meta set = "utf-8">
-            <head>
-            </head>
-            <body>
-              <h1> database </h1>
-              ${rows[0].id} / ${rows[0].title} / ${rows[0].date} / ${rows[0].title}
-            <body>
-          </html>
-        `
-      }
-      response.end(html);
-    });
-
-  }
 
   // [에러]
   else {
