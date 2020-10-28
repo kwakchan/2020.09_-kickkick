@@ -36,7 +36,7 @@ var app = http.createServer(function(request,response){
     response.end(login);
   }
 
-  // [경기매칭 matching]
+  // [---------------------경기매칭 matching---------------------]
   else if(pathname === '/matching'){
     db.query(`SELECT * FROM matching`, function(error,topics){
       if(error){
@@ -49,33 +49,40 @@ var app = http.createServer(function(request,response){
     });
   }  
 
-      //방만들기
+      //maching 방만들기
       else if(pathname === '/matching/matching_make'){
         var matching_make = matching_make_template.HTML();
         response.writeHead(200);
         response.end(matching_make);
       }
 
-      //방만들기 프로세스
+      //maching 방만들기 프로세스
       else if(pathname === '/create_process'){
-        request.on('end', function(){
-          var post = qs.parse(body);
-          console.log(post);
-          // var title = require.query.form_title;
-          // var date = require.query.form_date;
-          // var time = require.query.form_time;
-          // var content = require.query.form_content;
-          sql = "INSERT INTO matching (id, title, date, time, content) VALUES(6,?,?,?,?);";
-          db.query(sql,[post.form_title, post.form_date, post.form_time, post.form_content],function(error, result){
-              if(error){
-                throw error;
-              }
-              console.log(result.insertId)
-              response.writeHead(302, {Location: `/matching`});
-              response.end();
-            }
-          )
-        });    
+          var body = '';        
+          request.on('data', function(data){
+            body += data;
+          });
+          request.on('end', function(){
+            console.log()
+            var post = qs.parse(body);
+            var title = post.form_title
+            var title = post.form_title;
+            var date = post.form_date;
+            var time = post.form_time;
+            var content = post.form_content;
+            console.log(post, title, date, time, content);
+            
+            sql = "INSERT INTO matching (title, date, time, content) VALUES(?,?,?,?);";
+            db.query(sql,[title, date, time, content],function(error, result){
+                if(error){
+                  throw error;
+                }
+                console.log(result.insertId)
+                response.writeHead(302, {Location: `/matching`});
+                response.end();
+            });
+          });    
+        
       }
       
       //관리(방수정과 삭제)
@@ -174,7 +181,7 @@ var app = http.createServer(function(request,response){
         });
       }  
      
-  // [용병 hero]
+  //[---------------------용병 hero---------------------]
   else if(pathname === '/hero'){
     var hero = require('./lib/hero');
     response.writeHead(200);
@@ -192,7 +199,7 @@ var app = http.createServer(function(request,response){
         response.writeHead(200);
         response.end(hero_management);
       }
-  // [팀 team] 
+  //[---------------------팀 team---------------------]
   else if(pathname === '/team'){
     var team = require('./lib/team');
     response.writeHead(200);
@@ -210,21 +217,21 @@ var app = http.createServer(function(request,response){
         response.end(team_management_profile);
       }  
   
-  // [채팅 chat] 
+  //[---------------------채팅 chat---------------------] 
    else if(pathname === '/chat'){
     var chat = require('./lib/chat');
     response.writeHead(200);
     response.end(chat);
   }  
 
-  // [유저 user] 
+  //[---------------------유저 user---------------------] 
   else if(pathname === '/user'){
     var user = require('./lib/user');
     response.writeHead(200);
     response.end(user);
   }  
 
-  // [에러]
+  //[---------------------에러 error---------------------]
   else {
   response.writeHead(404);
   response.end('Not found');
