@@ -11,16 +11,17 @@ var db = mysql.createConnection({
   host: 'localhost',//'202.30.32.218',
   port: '3305',//'3306',
   user:'root',
-  database: 'kickkick'
+  database: 'kickkick',
+  dateStrings: 'date',
 });
 db.connect();
 
 var app = http.createServer(function(request,response){
-    var _url = request.url;
-    var queryData = url.parse(_url, true).query; 
-    var pathname = url.parse(_url, true).pathname;
-    console.log(queryData); // query string 값
-    console.log(pathname); 
+  var _url = request.url;
+  var queryData = url.parse(_url, true).query; 
+  var pathname = url.parse(_url, true).pathname;
+  console.log(queryData); // query string 값
+  console.log(pathname); 
 
   // [로딩 Loading]
   if(pathname === '/'){
@@ -85,100 +86,23 @@ var app = http.createServer(function(request,response){
         
       }
       
-      //관리(방수정과 삭제)
+      //matching 관리(방수정과 삭제)
       else if(pathname === '/matching/matching_management'){
-        db.query(`SELECT * FROM matching where id=?`, [queryData.id] , function(error2, topic){
-        if(error2){
-          throw error;
-        }
-        var matching_management = // matching_management_template.HTML();
-        `
-        <!DOCTYPE html>
-        <html>
-        <meta charset="utf-8">
-
-        <head>
-          <title>경기매칭-관리</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1"> 
-          <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-          <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-          <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+        db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
+          var title = topic[0].title;
+          var date = topic[0].date;
+          var time = topic[0].time;
+          var content = topic[0].content;        
+          console.log(title, date, time, content);
           
-          <style type="text/css">
-
-            #pop-up{
-              width: 320px;
-              height: 280px;
-              margin: 40% auto;
-
-              font-size:15px;
-              font-family: 'Nanum Gothic';
-              color: white;
-              background-color: lightgray;
-              line-height: 50px;
-              border: solid 2px grey;
-              border-radius: 40px;
-              
-              
-            }
-
-            #table{
-              text-align: center;
-              margin: auto;
-              align-items: center;
-            }
-            
-            #submit{
-              width: 100px;
-              background-color: gray;
-              text-align: center;
-              margin: auto;
-              align-items: center;
-            }
-          </style>
-        </head>
-
-        <body>
-
-          <div id="pop-up">
-
-            <table id="table"> 
-              <form action="#.php">
-                <tr>
-                  <td colspan="2"> 제목</td>
-                  <td colspan="2"> <input type="text" class=form value="${topic[0].title}"> </td>
-                </tr>
-
-                <tr>
-                  <td colspan="2">날짜</td>
-                  <td colspan="2"> <input type="date" class=form value="${topic[0].date}"> </td>
-                </tr>
-
-                <tr>
-                  <td colspan="2">시간</td>
-                  <td colspan="2"> <input type="time" class=form value="${topic[0].time}"> </td>
-                </tr>
-
-                <tr>
-                  <td colspan="2">내용</td>
-                  <td colspan="2"> <input type="text" class=form value="${topic[0].content}"> </td>
-                </tr>
-
-                <tr>
-                  <td colspan="4"> 
-                    <div id="submit"> <input type="submit" value="연락하기"> </div> 
-                  </td>
-                </tr> 
-              </form> 
-            </table>
-          </div>
-        </body>
-        </html>
-        `;
-        
-        response.writeHead(200);
-        response.end(matching_management);
+          if(error2){
+            throw error;
+          }
+          var matching_management = matching_management_template.HTML(title, date, time, content);
+          response.writeHead(200);
+          response.end(matching_management);  
         });
+        
       }  
      
   //[---------------------용병 hero---------------------]
