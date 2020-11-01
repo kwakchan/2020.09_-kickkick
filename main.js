@@ -5,6 +5,7 @@ var qs = require('querystring');
 var matching_template = require('./lib/matching.js');
 var matching_make_template = require('./lib/matching_make.js');
 var matching_management_template = require('./lib/matching_management.js');
+var matching_management_update_template = require('./lib/matching_management_update.js');
 
 var mysql = require('mysql');
 var db = mysql.createConnection({
@@ -23,7 +24,7 @@ var app = http.createServer(function(request,response){
   console.log(queryData); // query string 값
   console.log(pathname); 
 
-  // [로딩 Loading]
+  // [---------------------로딩 Loading---------------------]
   if(pathname === '/'){
     var loading = require('./lib/loading');
     response.writeHead(200);
@@ -58,7 +59,7 @@ var app = http.createServer(function(request,response){
       }
 
       //maching 방만들기 프로세스
-      else if(pathname === '/create_process'){
+      else if(pathname === '/matching/create_process'){
           var body = '';        
           request.on('data', function(data){
             body += data;
@@ -66,7 +67,6 @@ var app = http.createServer(function(request,response){
           request.on('end', function(){
             console.log()
             var post = qs.parse(body);
-            var title = post.form_title
             var title = post.form_title;
             var date = post.form_date;
             var time = post.form_time;
@@ -79,32 +79,72 @@ var app = http.createServer(function(request,response){
                   throw error;
                 }
                 console.log(result.insertId)
-                response.writeHead(302, {Location: `/matching`});
+                response.writeHead(302, {Location: `/matching`}); 
                 response.end();
             });
           });    
         
       }
       
-      //matching 관리(방수정과 삭제)
+      //matching 관리
       else if(pathname === '/matching/matching_management'){
         db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
+
           var title = topic[0].title;
           var date = topic[0].date;
           var time = topic[0].time;
           var content = topic[0].content;        
+          var queryData_id = queryData.id;
           console.log(title, date, time, content);
           
           if(error2){
             throw error;
           }
-          var matching_management = matching_management_template.HTML(title, date, time, content);
+          var matching_management = matching_management_template.HTML(title, date, time, content, queryData_id);
           response.writeHead(200);
           response.end(matching_management);  
-        });
-        
+        });        
+      }  
+
+      //matching 관리 방수정
+      else if(pathname === '/matching/matching_management/update'){
+        db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
+          var title = topic[0].title;
+          var date = topic[0].date;
+          var time = topic[0].time;
+          var content = topic[0].content;
+          var queryData_id = queryData.id;        
+          console.log(title, date, time, content);
+
+          if(pathname === '/matching/matching_management/update'){
+            if(error2){
+              throw error;
+            }
+            var matching_management_update = matching_management_update_template.HTML(queryData_id, title, date, time, content);
+            response.writeHead(200);
+            response.end(matching_management_update); 
+          }  
+        });   
       }  
      
+      //matching 관리 방삭제
+      else if(pathname === '/matching/matching_management/delete_process'){ 
+          var delete_url = request.url; // /matching/matching_management/delete_process?id=5
+  
+          var delete_url_queryData = url.parse(delete_url, true).query; 
+          console.log("delete_url:"+ delete_url);
+          console.log(delete_url_queryData);
+          
+          // db.query('DELETE FROM matching WHERE id = ?', [queryData_id], function(error2, result){
+          //   if(error2){
+          //     throw error;
+          //   }
+          //   response.writeHead(302, {Location: `/matching`});
+          //   response.end();
+          // }); 
+          
+      }
+
   //[---------------------용병 hero---------------------]
   else if(pathname === '/hero'){
     var hero = require('./lib/hero');
