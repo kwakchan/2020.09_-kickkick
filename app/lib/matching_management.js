@@ -50,10 +50,10 @@ module.exports = {
 
       <div id="pop-up">
         <a href="/matching/matching_management/update?id=${queryData_id}">
-        <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EB%A7%A4%EC%B9%AD.png" height="65px" width="65px">
+        <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%88%98%EC%A0%95.png" height="65px" width="65px">
         </a>
         <a href="/matching/matching_management/delete_process?id=${queryData_id}">
-        <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EB%A7%A4%EC%B9%AD.png" height="65px" width="65px"> 
+        <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%82%AD%EC%A0%9C.png" height="65px" width="65px"> 
         </a>
         <table id="table">           
           <form action="#.php">
