@@ -16,7 +16,7 @@ module.exports = {
 
         #pop-up{
           width: 320px;
-          height: 280px;
+          height: 450px;
           margin: 40% auto;
 
           font-size:15px;
@@ -49,14 +49,23 @@ module.exports = {
     <body>
 
       <div id="pop-up">
-        <a href="/matching/matching_management/update?id=${queryData_id}">
-        <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%88%98%EC%A0%95.png" height="65px" width="65px">
-        </a>
-        <a href="/matching/matching_management/delete_process?id=${queryData_id}">
-        <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%82%AD%EC%A0%9C.png" height="65px" width="65px"> 
-        </a>
+        <table id="table">
+          <tr>
+            <td>
+                <a href="/matching/matching_management/update?id=${queryData_id}">
+                  <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%88%98%EC%A0%95.png" height="30px" width="30px">
+                </a>
+            </td>
+            <td>
+                <a href="/matching/matching_management/delete_process?id=${queryData_id}">
+                  <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%82%AD%EC%A0%9C.png" height="30px" width="30px"> 
+                </a>
+              </td>
+            </tr>
+        </table>
         <table id="table">           
           <form action="#.php">
+            
             <tr>
               <td colspan="2">제목</td>
               <td colspan="2"> <input type="text" class=form value="${title}"> </td>
