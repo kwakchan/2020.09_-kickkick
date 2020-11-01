@@ -51,120 +51,115 @@ var app = http.createServer(function(request,response){
     });
   }  
 
-      //maching 방만들기
-      else if(pathname === '/matching/matching_make'){
-        var matching_make = matching_make_template.HTML();
-        response.writeHead(200);
-        response.end(matching_make);
-      }
+  //maching 방만들기
+  else if(pathname === '/matching/matching_make'){
+    var matching_make = matching_make_template.HTML();
+    response.writeHead(200);
+    response.end(matching_make);
+  }
 
-      //maching 방만들기 프로세스
-      else if(pathname === '/matching/create_process'){
-          var body = '';        
-          request.on('data', function(data){
-            body += data;
-          });
-          request.on('end', function(){
-            var post = qs.parse(body);
-            var title = post.form_title;
-            var date = post.form_date;
-            var time = post.form_time;
-            var content = post.form_content;
-            console.log(post, title, date, time, content);
-            
-            sql = "INSERT INTO matching (title, date, time, content) VALUES(?,?,?,?);";
-            db.query(sql,[title, date, time, content],function(error, result){
-                if(error){
-                  throw error;
-                }
-                console.log(result.insertId)
-                response.writeHead(302, {Location: `/matching`}); 
-                response.end();
-            });
-          });    
-        
-      }
+  //maching 방만들기 프로세스
+  else if(pathname === '/matching/create_process'){
+    var body = '';        
+    request.on('data', function(data){
+      body += data;
+    });
+    request.on('end', function(){
+      var post = qs.parse(body);
+      var title = post.form_title;
+      var date = post.form_date;
+      var time = post.form_time;
+      var content = post.form_content;
       
-      //matching 관리
-      else if(pathname === '/matching/matching_management'){
-        db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
-
-          var title = topic[0].title;
-          var date = topic[0].date;
-          var time = topic[0].time;
-          var content = topic[0].content;        
-          var queryData_id = queryData.id;
-          console.log(title, date, time, content);
-          
-          if(error2){
+      sql = "INSERT INTO matching (title, date, time, content) VALUES(?,?,?,?);";
+      db.query(sql,[title, date, time, content],function(error, result){
+          if(error){
             throw error;
           }
-          var matching_management = matching_management_template.HTML(title, date, time, content, queryData_id);
-          response.writeHead(200);
-          response.end(matching_management);  
-        });        
-      }  
-
-      //matching 관리 방수정
-      else if(pathname === '/matching/matching_management/update'){
-        db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
-          var title = topic[0].title;
-          var date = topic[0].date;
-          var time = topic[0].time;
-          var content = topic[0].content;
-          var queryData_id = queryData.id;        
-          console.log(title, date, time, content, queryData_id);
-          
-          if(error2){
-            throw error;
-          }
-          var matching_management_update = matching_management_update_template.HTML(title, date, time, content, queryData_id);
-          response.writeHead(200);
-          response.end(matching_management_update); 
-        });   
-      }  
-
-      //matching 관리 방수정 프로세스
-      else if(pathname === '/matching/matching_management/update_process'){
-        var body = '';
-        request.on('data', function(data){
-            body = body + data;
-        });
-        request.on('end', function(){
-            var post = qs.parse(body);
-            var title = post.update_title;
-            var date = post.update_date;
-            var time = post.update_time;
-            var content = post.update_content;
-            var queryData_id = queryData.id;
-            console.log( title, date, time, content, queryData_id);
-
-            db.query('UPDATE matching SET title=?, date=?, time=?, content=? WHERE id=?', [title, date, time, content, queryData_id], function(error, result){
-              response.writeHead(302, {Location: `/matching`});
-              response.end();
-            })
-            
-        });   
-      } 
-
-     
-      //matching 관리 방삭제 프로세스
-      else if(pathname === '/matching/matching_management/delete_process'){ 
-        var body = '';
-        request.on('data', function(data){
-            body = body + data;
-        });
-        request.on('end', function(){
-            var queryData_id = queryData.id;
-            db.query('DELETE FROM matching WHERE id = ?', [queryData_id], function(error, result){
-              if(error){
-                throw error;
-              }
-              response.writeHead(302, {Location: `/matching`});
-              response.end();
-            });
-        });
+          console.log(result.insertId)
+          response.writeHead(302, {Location: `/matching`}); 
+          response.end();
+      });
+    });    
+  
+  }
+  
+  //matching 관리(수정, 삭제)
+  else if(pathname === '/matching/matching_management'){
+    db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
+      var title = topic[0].title;
+      var date = topic[0].date;
+      var time = topic[0].time;
+      var content = topic[0].content;        
+      var queryData_id = queryData.id;
+      
+      if(error2){
+        throw error;
       }
+      var matching_management = matching_management_template.HTML(title, date, time, content, queryData_id);
+      response.writeHead(200);
+      response.end(matching_management);  
+    });        
+  }  
+
+  //matching 관리 방수정
+  else if(pathname === '/matching/matching_management/update'){
+    db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
+      var title = topic[0].title;
+      var date = topic[0].date;
+      var time = topic[0].time;
+      var content = topic[0].content;
+      var queryData_id = queryData.id;        
+      
+      if(error2){
+        throw error;
+      }
+      var matching_management_update = matching_management_update_template.HTML(title, date, time, content, queryData_id);
+      response.writeHead(200);
+      response.end(matching_management_update); 
+    });   
+  }  
+
+  //matching 관리 방수정 프로세스
+  else if(pathname === '/matching/matching_management/update_process'){
+    var body = '';
+    request.on('data', function(data){
+        body = body + data;
+    });
+    request.on('end', function(){
+      var post = qs.parse(body);
+      var title = post.update_title;
+      var date = post.update_date;
+      var time = post.update_time;
+      var content = post.update_content;
+      var queryData_id = queryData.id;
+
+      db.query('UPDATE matching SET title=?, date=?, time=?, content=? WHERE id=?', [title, date, time, content, queryData_id], function(error, result){
+        response.writeHead(302, {Location: `/matching`});
+        response.end();
+      })
+        
+    });   
+  } 
+
+  
+  //matching 관리 방삭제 프로세스
+  else if(pathname === '/matching/matching_management/delete_process'){ 
+    var body = '';
+    request.on('data', function(data){
+        body = body + data;
+    });
+    request.on('end', function(){
+        var queryData_id = queryData.id;
+        db.query('DELETE FROM matching WHERE id = ?', [queryData_id], function(error, result){
+          if(error){
+            throw error;
+          }
+          response.writeHead(302, {Location: `/matching`});
+          response.end();
+        });
+    });
+  }
 
   //[---------------------용병 hero---------------------]
   else if(pathname === '/hero'){
