@@ -65,7 +65,6 @@ var app = http.createServer(function(request,response){
             body += data;
           });
           request.on('end', function(){
-            console.log()
             var post = qs.parse(body);
             var title = post.form_title;
             var date = post.form_date;
@@ -114,35 +113,57 @@ var app = http.createServer(function(request,response){
           var time = topic[0].time;
           var content = topic[0].content;
           var queryData_id = queryData.id;        
-          console.log(title, date, time, content);
-
-          if(pathname === '/matching/matching_management/update'){
-            if(error2){
-              throw error;
-            }
-            var matching_management_update = matching_management_update_template.HTML(queryData_id, title, date, time, content);
-            response.writeHead(200);
-            response.end(matching_management_update); 
-          }  
+          console.log(title, date, time, content, queryData_id);
+          
+          if(error2){
+            throw error;
+          }
+          var matching_management_update = matching_management_update_template.HTML(title, date, time, content, queryData_id);
+          response.writeHead(200);
+          response.end(matching_management_update); 
         });   
       }  
+
+      //matching 관리 방수정 프로세스
+      else if(pathname === '/matching/matching_management/update_process'){
+        var body = '';
+        request.on('data', function(data){
+            body = body + data;
+        });
+        request.on('end', function(){
+            var post = qs.parse(body);
+            var title = post.update_title;
+            var date = post.update_date;
+            var time = post.update_time;
+            var content = post.update_content;
+            var queryData_id = queryData.id;
+            console.log( title, date, time, content, queryData_id);
+
+            db.query('UPDATE matching SET title=?, date=?, time=?, content=? WHERE id=?', [title, date, time, content, queryData_id], function(error, result){
+              response.writeHead(302, {Location: `/matching`});
+              response.end();
+            })
+            
+        });   
+      } 
+
      
-      //matching 관리 방삭제
+      //matching 관리 방삭제 프로세스
       else if(pathname === '/matching/matching_management/delete_process'){ 
-          var delete_url = request.url; // /matching/matching_management/delete_process?id=5
-  
-          var delete_url_queryData = url.parse(delete_url, true).query; 
-          console.log("delete_url:"+ delete_url);
-          console.log(delete_url_queryData);
-          
-          // db.query('DELETE FROM matching WHERE id = ?', [queryData_id], function(error2, result){
-          //   if(error2){
-          //     throw error;
-          //   }
-          //   response.writeHead(302, {Location: `/matching`});
-          //   response.end();
-          // }); 
-          
+        var body = '';
+        request.on('data', function(data){
+            body = body + data;
+        });
+        request.on('end', function(){
+            var queryData_id = queryData.id;
+            db.query('DELETE FROM matching WHERE id = ?', [queryData_id], function(error, result){
+              if(error){
+                throw error;
+              }
+              response.writeHead(302, {Location: `/matching`});
+              response.end();
+            });
+        });
       }
 
   //[---------------------용병 hero---------------------]
