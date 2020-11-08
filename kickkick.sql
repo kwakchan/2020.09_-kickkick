@@ -15,3 +15,14 @@ create table hero(
      content text(80),
     PRIMARY KEY (id)
      );     
+
+create table user(
+     id int(10) AUTO_INCREMENT not null,
+     name varchar(30) not null,
+     age int(3),
+     team varchar(10),
+     position varchar(4),
+     height int(4),
+     weight int(4),     
+     PRIMARY KEY (id)
+     );          

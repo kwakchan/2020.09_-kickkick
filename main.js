@@ -2,6 +2,9 @@ var http = require('http');
 var url = require('url');
 var qs = require('querystring');
 
+var express = require('express');
+var app = express();
+ 
 var matching_template = require('./lib/matching.js');
 var matching_make_template = require('./lib/matching_make.js');
 var matching_management_template = require('./lib/matching_management.js');
@@ -11,6 +14,8 @@ var hero_template = require('./lib/hero.js');
 var hero_make_template = require('./lib/hero_make.js');
 var hero_management_template = require('./lib/hero_management.js');
 var hero_management_update_template = require('./lib/hero_management_update.js');
+
+var user_template = require('./lib/user.js');
 
 var mysql = require('mysql');
 var db = mysql.createConnection({
@@ -22,6 +27,140 @@ var db = mysql.createConnection({
 });
 db.connect();
 
+// [---------------------로그인 Login---------------------]
+app.get('/', function(request, response){
+  var loading = require('./lib/loading');
+  response.send(loading);
+});
+
+app.get('/login', function(request, response){
+  var login = require('./lib/login');
+  response.send(login);
+});
+
+// [---------------------경기매칭 matching---------------------]
+// matching 리스트
+app.get('/matching', function(request, response){
+  db.query(`SELECT * FROM matching`, function(error,topics){
+    if(error){
+      throw error;
+    }
+    var list = matching_template.list(topics);
+    var matching = matching_template.HTML(list);
+  response.send(matching);
+  });
+});
+
+//maching 방만들기
+app.get('/matching/matching_make', function(request, response){
+  var matching_make = matching_make_template.HTML();
+  response.send(matching_make);
+});
+
+//maching 방만들기 프로세스
+app.post('/matching/create_process', function(request, response){
+  var body = '';        
+  request.on('data', function(data){
+    body += data;
+  });
+  request.on('end', function(){
+    var post = qs.parse(body);
+    var title = post.form_title;
+    var date = post.form_date;
+    var time = post.form_time;
+    var content = post.form_content;
+    
+    sql = "INSERT INTO matching (title, date, time, content) VALUES(?,?,?,?);";
+    db.query(sql,[title, date, time, content],function(error, result){
+        if(error){
+          throw error;
+        }
+        response.writeHead(302, {Location: `/matching`}); 
+        response.end();
+    });
+  });    
+});
+
+//matching 관리(수정, 삭제)
+app.get('/matching/matching_management', function(request, response){
+  db.query(`SELECT * FROM matching where id=?`,[queryData.id],function(error2, topic){
+    var title = topic[0].title;
+    var date = topic[0].date;
+    var time = topic[0].time;
+    var content = topic[0].content;        
+    var queryData_id = queryData.id;
+    
+    if(error2){
+      throw error;
+    }
+    var matching_management = matching_management_template.HTML(title, date, time, content, queryData_id);
+    response.send(matching_management);  
+  });    
+});       
+
+//matching 관리 방수정
+app.get('/matching/matching_management/update', function(request, response){
+  db.query(`SELECT * FROM matching where id=8`,function(error2, topic){
+    var title = topic[0].title;
+    var date = topic[0].date;
+    var time = topic[0].time;
+    var content = topic[0].content;
+    var queryData_id = queryData.id;        
+    
+    if(error2){
+      throw error;
+    }
+    var matching_management_update = matching_management_update_template.HTML(title, date, time, content, queryData_id);
+    response.writeHead(200);
+    response.end(matching_management_update); 
+  });   
+});
+
+//matching 관리 방수정 프로세스
+app.post('/matching/matching_management/update_process', function(request, response){
+  var body = '';
+  request.on('data', function(data){
+      body = body + data;
+  });
+  request.on('end', function(){
+    var post = qs.parse(body);
+    var title = post.update_title;
+    var date = post.update_date;
+    var time = post.update_time;
+    var content = post.update_content;
+    var queryData_id = queryData.id;
+
+    db.query('UPDATE matching SET title=?, date=?, time=?, content=? WHERE id=?', [title, date, time, content, queryData_id], function(error, result){
+      response.writeHead(302, {Location: `/matching`});
+      response.end();
+    }) 
+       
+  });
+});
+
+//matching 관리 방삭제 프로세스
+app.post('/matching/matching_management/delete_process', function(request, response){
+  var body = '';
+  request.on('data', function(data){
+      body = body + data;
+  });
+  request.on('end', function(){
+      var queryData_id = queryData.id;
+      db.query('DELETE FROM matching WHERE id = ?', [queryData_id], function(error, result){
+        if(error){
+          throw error;
+        }
+        response.writeHead(302, {Location: `/matching`});
+        response.end();
+      });
+  });
+});
+
+app.listen(3000, function() {
+  console.log('Let`s go Kick Kick')
+});
+
+/*
 var app = http.createServer(function(request,response){
   var _url = request.url;
   var queryData = url.parse(_url, true).query; 
@@ -313,9 +452,25 @@ var app = http.createServer(function(request,response){
 
   //[---------------------유저 user---------------------] 
   else if(pathname === '/user'){
-    var user = require('./lib/user');
+    db.query(`SELECT * FROM user where id=?`, [queryData_id], function(error,topics){
+      if(error){
+        throw error;
+      }
+    var user = user_template.HTML(topics);
     response.writeHead(200);
     response.end(user);
+    });
+  }  
+
+  else if(pathname === '/user_create'){
+    db.query(`create * FROM user where id=?`, [1], function(error,topics){
+      if(error){
+        throw error;
+      }
+    var user = user_template.HTML(topics);
+    response.writeHead(200);
+    response.end(user);
+    });
   }  
 
   //[---------------------에러 error---------------------]
@@ -328,3 +483,5 @@ var app = http.createServer(function(request,response){
 app.listen(3000, function() {
   console.log('Let`s go to [kick kick]!')
 });
+
+*/
