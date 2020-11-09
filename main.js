@@ -1,10 +1,8 @@
 var url = require('url');
 var qs = require('querystring');
+
 var express = require('express');
 var app = express();
-
-var bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({ extended: false }));
 
 var matching_template = require('./lib/matching.js');
 var matching_make_template = require('./lib/matching_make.js');
@@ -17,6 +15,9 @@ var hero_management_template = require('./lib/hero_management.js');
 var hero_management_update_template = require('./lib/hero_management_update.js');
 
 var user_template = require('./lib/user.js');
+
+var bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: false }));
 
 var mysql = require('mysql');
 var db = mysql.createConnection({
