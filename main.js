@@ -20,6 +20,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 
 var mysql = require('mysql');
+const { Router } = require('express');
 var db = mysql.createConnection({
   host: 'localhost',//'202.30.32.218',
   port: '3305',//'3306',
@@ -39,6 +40,42 @@ app.get('/', function(request, response){
 app.get('/login', function(request, response){
   var login = require('./lib/login');
   response.send(login);
+});
+
+// Login 로그인 process
+app.post('/login_process', function(request, response){
+  var post = request.body;
+  var email = post.email; //sgcks@naver.com
+  var password = post.password; // 1234
+  console.log(email);
+  console.log(password);
+
+  db.query('SELECT * FROM user where email=? and password=?', [email, password] , function(error,topic){ 
+    if(error){
+      throw error;
+    }
+    console.log(topic[0].email);
+    console.log(topic[0].name);
+    response.writeHead(302, {Location: `/user?email=${email}`});
+    response.end();
+    });
+//     if (err) {
+//       console.log('err :' + err);
+//     } else {
+//       console.log(rows);
+//       if (rows[0] != undefined) {
+//         if (!(password == rows[0].password)) {     // 비밀번호는 bcrypt를 이용한 암호화를 했으
+//           console.log('패스워드가 일치하지 않습니다');  //므로, bcrypt.compareSync 명령어실행
+//         } else {
+//           console.log('로그인 성공');
+//           response.redirect('/matching');
+//         }
+//       } else {
+//         console.log(rows[0]);
+//         console.log('해당 유저가 없습니다');
+//       }
+//     }
+//   })
 });
 
 // matching 리스트--------------------------------------------
@@ -117,7 +154,7 @@ app.get('/matching/matching_management/update', function(request, response){
 //matching 관리 방수정 프로세스
 app.post('/matching/matching_management/update_process', function(request, response){
   var queryData = url.parse(request.url, true).query; 
-  
+
   var post = request.body;
   var title = post.update_title;
   var date = post.update_date;
@@ -282,8 +319,8 @@ app.get('/chat', function(request, response){
 //user 유저------------------------------------
 app.get('/user', function(request, response){
   var queryData = url.parse(request.url, true).query; 
-
-  db.query(`SELECT * FROM user where id=?`, [queryData.id], function(error,topics){
+  console.log(queryData.email);  
+  db.query(`SELECT * FROM user where email=?`, [queryData.email], function(error,topics){
     if(error){
       throw error;
     }
