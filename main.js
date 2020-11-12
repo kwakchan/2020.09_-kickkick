@@ -43,7 +43,7 @@ app.get('/login', function(request, response){
 });
 
 // Login 로그인 process
-app.post('/login_process', function(request, response){
+app.post('/login/login_process', function(request, response){
   var post = request.body;
   var email = post.email; //sgcks@naver.com
   var password = post.password; // 1234
@@ -76,6 +76,28 @@ app.post('/login_process', function(request, response){
 //       }
 //     }
 //   })
+});
+
+// Login 회원가입
+app.get('/login/login_register', function(request, response){
+  var register = require('./lib/login_register');
+  response.send(register);
+});
+
+// Login 회원가입 프로세스
+app.post('/login/register_process', function(request,response){
+  var post = request.body;
+  var email = post.email;
+  var password = post.password;
+  var nickname = post.nickname;
+  sql = "INSERT INTO user (email, password, name) VALUES(?,?,?);";
+  db.query(sql, [email, password, nickname], function(error,topics){
+    if(error){
+      throw error;
+    }
+    response.writeHead(302, {Location: `/login`}); 
+    response.end();
+  });
 });
 
 // matching 리스트--------------------------------------------
