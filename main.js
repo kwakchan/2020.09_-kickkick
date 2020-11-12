@@ -4,6 +4,11 @@ var qs = require('querystring');
 var express = require('express');
 var app = express();
 
+var multer = require('multer') // 파일 올리기 모듈
+var upload = multer({ dest: "uploads/"});
+
+var login_template = require('./lib/login.js')
+
 var matching_template = require('./lib/matching.js');
 var matching_make_template = require('./lib/matching_make.js');
 var matching_management_template = require('./lib/matching_management.js');
@@ -22,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 var mysql = require('mysql');
 const { Router } = require('express');
 var db = mysql.createConnection({
+  connectionLimit: 10,
   host: 'localhost',//'202.30.32.218',
   port: '3305',//'3306',
   user:'root',
@@ -38,7 +44,7 @@ app.get('/', function(request, response){
 
 // Login 로그인
 app.get('/login', function(request, response){
-  var login = require('./lib/login');
+  var login = login_template.HTML();
   response.send(login);
 });
 
@@ -89,9 +95,9 @@ app.post('/login/register_process', function(request,response){
   var post = request.body;
   var email = post.email;
   var password = post.password;
-  var nickname = post.nickname;
+  var name = post.name;
   sql = "INSERT INTO user (email, password, name) VALUES(?,?,?);";
-  db.query(sql, [email, password, nickname], function(error,topics){
+  db.query(sql, [email, password, name], function(error,topics){
     if(error){
       throw error;
     }
@@ -351,17 +357,6 @@ app.get('/user', function(request, response){
   });  
 });
 
-app.get('/user_create', function(request, response){
-  var queryData = url.parse(request.url, true).query; 
-
-  db.query(`create * FROM user where id=?`, [queryData.id], function(error,topics){
-    if(error){
-      throw error;
-    }
-  var user = user_template.HTML(topics);
-  response.send(user);
-  });  
-});
 
 app.listen(3000, function() {
   console.log('Let`s go Kick Kick')
