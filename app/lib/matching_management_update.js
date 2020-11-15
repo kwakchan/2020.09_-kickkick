@@ -1,5 +1,5 @@
 module.exports = {
-    HTML:function(title, date, time, content){ 
+    HTML:function(title, date, time, content, queryData_id){ 
       return `
       <!DOCTYPE html>
       <html>
@@ -46,44 +46,37 @@ module.exports = {
         </style>
       </head>
   
-      <body>
-  
-        <div id="pop-up">
-  
+      <body> 
+      
+        <form action="/matching/matching_management/update_process?id=${queryData_id}" method="post" id="pop-up">
           <table id="table"> 
-            
-            <form action="#.php">
               <tr>
                 <td colspan="2">제목</td>
-                <td colspan="2"> <input type="text" class=form value="${title}"> </td>
+                <td colspan="2"> <input type="text" class=form value="${title}" name='update_title'> </td>
               </tr>
   
               <tr>
                 <td colspan="2">날짜</td>
-                <td colspan="2"> <input type="date" class=form value="${date}"> </td>
+                <td colspan="2"> <input type="date" class=form value="${date}" name='update_date'> </td>
               </tr>
   
               <tr>
                 <td colspan="2">시간</td>
-                <td colspan="2"> <input type="time" class=form value="${time}"> </td>
+                <td colspan="2"> <input type="time" class=form value="${time}" name='update_time'> </td>
               </tr>
   
               <tr>
                 <td colspan="2">내용</td>
-                <td colspan="2"> <input type="text" class=form value="${content}"> </td>
+                <td colspan="2"> <input type="text" class=form value="${content}" name='update_content'> </td>
               </tr>
   
               <tr>
                 <td colspan="4"> 
-                  <div id="submit"> <input type="submit" value="확 인"> </div> 
+                  <div id="submit"> <input type="submit" value="수정하기"> </div> 
                 </td>
               </tr> 
-  
-            </form> 
           </table>
-  
-        </div>
-  
+        </form>   
   
       </body>
       </html>

@@ -45,50 +45,33 @@ module.exports = {
 		</style>
 	</head>
 
-	<body>
-		<form action="#.php" id="pop-up">
-			<table id="table2">
-				<tr>
-					<td>
-						상세정보
-					</td>
-					<td>
-						<a href="/hero/hero_management/update?id=${queryData_id}">
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%88%98%EC%A0%95.png" height="30px" width="30px">
-						</a>
-					</td>
-					<td>
-						<a href="/hero/hero_management/delete_process?id=${queryData_id}">
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%82%AD%EC%A0%9C.png" height="30px" width="30px"> 
-						</a>
-					</td>
-				</tr>
-			</table>
-		
+    <body>
+    
+		<form action="/hero/hero_management/update_process?id=${queryData_id}" method="post" id="pop-up">
 			<table id="table2"> 
 				<tr>
 					<td colspan="2">용병 이름</td>
-					<td colspan="2"> <input type="text" class=form value="${name}" readonly> </td>
+					<td colspan="2"> <input type="text" class=form value="${name}" name='update_name'> </td>
 				</tr>
 
 				<tr>
 					<td colspan="2">날짜</td>
-					<td colspan="2"> <input type="date" class=form value="${date}" readonly> </td>
+					<td colspan="2"> <input type="date" class=form value="${date}" name='update_date'> </td>
 				</tr>
 
 				<tr>
 					<td colspan="2">시간</td>
-					<td colspan="2"> <input type="time" class=form value="${time}" readonly> </td>
+					<td colspan="2"> <input type="time" class=form value="${time}" name='update_time'> </td>
 				</tr>
 
 				<tr>
 					<td colspan="2">내용</td>
-					<td colspan="2"> <input type="text" class=form value="${content}" readonly> </td>
+					<td colspan="2"> <input type="text" class=form value="${content}" name='update_content'> </td>
 				</tr>
 
 				<tr>
 					<td colspan="4"> 
-						<div id="submit"> <input type="submit" value="연락하기"> </div> 
+						<div id="submit"> <input type="submit" value="수정하기"> </div> 
 					</td>
 				</tr> 
 

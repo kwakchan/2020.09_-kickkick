@@ -1,13 +1,14 @@
-var login = `
+var register = `
 <!DOCTYPE html>
 <html>
 <head>
-   <title>로그인</title>
+   <title>회원가입</title>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <link href="http://fonts.googleapis.com/earlyaccess/hanna.css" rel="stylesheet">
    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script language="javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
    <script src="colors.js"></script>
    <script>
   
@@ -55,7 +56,63 @@ var login = `
      js = d.createElement(s); js.id = id;
      js.src = "https://connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
+    }(document, 'script', 'facebook-jssdk'));
+    </script>
+    <script>
+    function checks(){ 
+        var hobbyCheck = false; 
+        var getMail = RegExp(/^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/); 
+        var getCheck= RegExp(/^[a-zA-Z0-9]{8,12}$/); 
+        var getName= RegExp(/^[가-힣]+$/);
+        var fmt = RegExp(/^\d{6}[1234]\d{6}$/); //형식 설정
+
+        //비밀번호 공백 확인 
+        if($("#password").val() == ""){ 
+            alert("비밀번호 입력바람"); 
+            $("#password").focus(); 
+            return false; } 
+            
+        //아이디 비밀번호 같음 확인 
+        if($("#mail").val() == $("#password").val()){ 
+            alert("이메일과 비밀번호가 같습니다"); 
+            $("#password").val(""); 
+            $("#password").focus(); 
+            return false; } 
+            
+        //비밀번호 유효성검사 
+        if(!getCheck.test($("#password").val())){ 
+            alert("비밀번호 형식에 맞게 입력해주세요"); 
+            $("#password").val(""); 
+            $("#password").focus(); 
+            return false; } 
+            
+        //비밀번호 확인란 공백 확인 
+        if($("#password_check").val() == ""){ 
+            alert("비밀번호 확인란을 입력해주세요"); 
+            $("#password_check").focus(); 
+            return false; } 
+            
+        //비밀번호 서로확인 
+        if($("#password").val() != $("#password_check").val()){ 
+            alert("비밀번호가 상이합니다"); 
+            $("#password").val(""); 
+            $("#password_check").val(""); 
+            $("#password").focus(); 
+            return false; } 
+            
+        //이메일 공백 확인 
+        if($("#mail").val() == ""){ 
+            alert("이메일을 입력해주세요"); 
+            $("#mail").focus(); 
+            return false; } 
+            
+        //이메일 유효성 검사 
+        if(!getMail.test($("#mail").val())){ 
+            alert("이메일형식에 맞게 입력해주세요") 
+            $("#mail").val(""); 
+            $("#mail").focus(); 
+            return false; }
+        }
    </script>
 
    <style type="text/css">
@@ -128,41 +185,20 @@ var login = `
    </style>
 </head>
 <body>
-   <div class="set">
-      <div class="wel1">WELCOME<br></div>
-      <div class="wel2">킥킥<br></div>
-      <div class="btn">
-         <form action="login/login_process" method="post">
-            <p><input type="text" name="email" placeholder="email"></p>
-            <p><input type="password" name="password" placeholder="password"></p>
-            <p><input type="submit"></p>
-         </form>
-         
-         <a href="login/login_register">회원가입</a></br>
-         <a class="btn1" href="matching.html">카카오톡으로 로그인</a><br>
-         <a class="btn2">네이버로 로그인</a><br>
-         <input class="btn3" type="button" id="authBtn" value="checking..." onclick="
-            if(this.value === 'Login'){
-            // now logout
-            FB.login(function(res){ //페이스북 로그인 버튼을 눌렀을 때의 루틴
-               console.log('login =>', res);
-               checkLoginStatus(res);
-            });
-            } else {
-            // now login
-            FB.logout(function(res){
-               console.log('logout =>', res);
-               checkLoginStatus(res);
-            });
-            }
-         ">
-         <div id="fb-root"></div>
-         <script async defer crossorigin="anonymous" src="https://connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v8.0&appId=351413062728218&autoLogAppEvents=1" nonce="cd0Q7qvz"></script>
-         <div class="fb-login-button" data-size="large" data-button-type="login_with" data-layout="default" data-auto-logout-link="true" data-use-continue-as="false" data-width=""></div>
-      </div>
-   </div>
+    <form action="/login/register_process" method="post" onsubmit="return checks()">
+    <p><input type="text" name="name" placeholder="name"></p>
+    <p><input type="text" name="email" placeholder="email" id="mail"></p>
+    예) id@domain.com
+    <p><input type="password" name="password" placeholder="password" id="password"></p>
+    8~12자의 영문 대소문자와 숫자로만 입력
+    <p><input type="password" name="password2" placeholder="password" id="password_check"></p>
+    8~12자의 영문 대소문자와 숫자로만 입력
+    <p>
+    <input type="submit" value="가입">
+    </p>
+    </form>
 </body>
 </html>
 `;
 
-module.exports = login;
+module.exports = register;

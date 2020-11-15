@@ -15,8 +15,8 @@ module.exports = {
       <style type="text/css">
 
         #pop-up{
-          width: 320px;
-          height: 450px;
+          width: 80%;
+          height: 70%;
           margin: 40% auto;
 
           font-size:15px;
@@ -25,12 +25,10 @@ module.exports = {
           background-color: lightgray;
           line-height: 50px;
           border: solid 2px grey;
-          border-radius: 40px;
-          
-          
+          border-radius: 40px;    
         }
 
-        #table{
+        #table2{
           text-align: center;
           margin: auto;
           align-items: center;
@@ -47,12 +45,14 @@ module.exports = {
     </head>
 
     <body>
-
-      <div id="pop-up">
-        <table id="table">
+      <form action="#.php" id="pop-up">  
+        <table id="table2">
           <tr>
             <td>
-                <a href="/matching/matching_management/update?id=${queryData_id}">
+              상세정보
+            </td>
+            <td>
+                <a href="/matching/matching_management/update?id=${queryData_id}"> 
                   <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%88%98%EC%A0%95.png" height="30px" width="30px">
                 </a>
             </td>
@@ -60,15 +60,14 @@ module.exports = {
                 <a href="/matching/matching_management/delete_process?id=${queryData_id}">
                   <img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/kickkick/minsu/app/img/%EC%82%AD%EC%A0%9C.png" height="30px" width="30px"> 
                 </a>
-              </td>
-            </tr>
+            </td>
+          </tr>
         </table>
-        <table id="table">           
-          <form action="#.php">
-            
+
+        <table id="table2">           
             <tr>
               <td colspan="2">제목</td>
-              <td colspan="2"> <input type="text" class=form value="${title}"> </td>
+              <td colspan="2"> <input type="text" class=form value="${title}" readonly> </td>
             </tr>
 
             <tr>
@@ -88,18 +87,17 @@ module.exports = {
 
             <tr>
               <td colspan="4"> 
-                <div id="submit"> <input type="submit" value="연락하기"> </div> 
+                <input type="submit" value="연락하기" id="submit"> 
               </td>
             </tr> 
-
-          </form> 
+            
         </table>
-
-      </div>
+      </form>   
+    
 
 
     </body>
     </html>
-    `;
+  `;
   }
 }
