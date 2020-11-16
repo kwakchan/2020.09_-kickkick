@@ -18,6 +18,7 @@ var hero_make_template = require('./lib/hero_make.js');
 var hero_management_template = require('./lib/hero_management.js');
 var hero_management_update_template = require('./lib/hero_management_update.js');
 var user_template = require('./lib/user.js');
+var user_update_template = require('./lib/user_update.js');
 
 var multer = require('multer') // 파일 올리기 모듈
 
@@ -80,7 +81,6 @@ var storage = multer.diskStorage({
 
 
 var mysql = require('mysql');
-// const { Router } = require('express');
 var db = mysql.createConnection({
   connectionLimit: 10,
   host: 'localhost',//'202.30.32.218',
@@ -106,8 +106,8 @@ app.get('/login', function (request, response) {
 // Login 로그인 process
 app.post('/login/login_process', function (request, response) {
   var post = request.body;
-  var email = post.email; //sgcks@naver.com
-  var password = post.password; // 1234
+  var email = post.email; 
+  var password = post.password; 
   console.log(email);
   console.log(password);
 
@@ -402,24 +402,75 @@ app.get('/chat', function (request, response) {
 });
 
 //user 유저------------------------------------
-app.get('/user', function (request, response) {
-  var queryData = url.parse(request.url, true).query;
-  // var url= '';
-  var fileName='A.jpg';
-  var encoding = null;
-  console.log(queryData.email);
-
-  fs.readFile(fileName, encoding, function(error, data){
-    db.query(`SELECT * FROM user where email=?`, [queryData.email], function (error, topics) {
-      if (error) {
-        throw error;
+app.get('/user', function(request, response){
+  var queryData = url.parse(request.url, true).query; 
+  var queryData_email = queryData.email;
+  var image_directroy = "./uploads"
+  var image_name = "/A.jpg"
+  var image = image_directroy+image_name;
+  fs.readFile(image_directroy+image_name, 'utf8', function(error1, profile_img){
+    if(error1){
+      throw error1;
+    }
+    db.query(`SELECT * FROM user where email=?`, [queryData.email], function(error2,users){
+      if(error2){
+        throw error2;
       }
-      var user = user_template.HTML(topics, data);
-      response.send(user);
-    });
+    var user = user_template.HTML(users, queryData_email, image);
+    response.send(user);
+    });  
   });  
 });
 
+//user 수정
+app.get('/user/update', function(request, response){
+  var queryData = url.parse(request.url, true).query; 
+  
+  db.query(`SELECT * FROM user where email=?`, [queryData.email],function(error2, users){
+    var name = users[0].name;
+    var age = users[0].age;
+    var team = users[0].team;
+    var position = users[0].position;        
+    var height = users[0].height;
+    var weight = users[0].weight;
+    var queryData_email = queryData.email;       
+    
+    if(error2){
+      throw error;
+    }
+    var user_update = user_update_template.HTML(queryData_email, name, age, team, position, height, weight);
+    response.writeHead(200);
+    response.end(user_update); 
+  });   
+});
+
+//user 수정 프로세스
+app.post('/user/update_process', function(request, response){
+  var queryData = url.parse(request.url, true).query; 
+
+  var post = request.body;
+  var name = post.update_name;
+  var age = post.update_age;
+  var team = post.update_team;
+  var position = post.update_position;        
+  var height = post.update_height;
+  var weight = post.update_weight;
+  var queryData_email = queryData.email;
+
+  db.query('UPDATE user SET name=?, age=?, team=?, position=?, height=?, weight=? WHERE email=?',
+  [name, age, team, position, height, weight, queryData_email],
+  function(error, result){
+    response.writeHead(302, {Location: `/user?email=${queryData_email}`});
+    response.end();
+  }) 
+
+});
+
+//user 로그아웃 프로세스
+app.get('/user/logout_process', function(request, response){
+  response.writeHead(302, {Location: `/login`});
+  response.end();
+});
 
 app.listen(3000, function () {
   console.log('Let`s go Kick Kick')
