@@ -5,7 +5,7 @@ create table matching(
      time time,
      contents text(80),
      team varchar(10),
-     PRIMARY KEY (id)     
+     PRIMARY KEY (id)
      );
 
 create table hero(
@@ -27,4 +27,4 @@ create table user(
      height int(4),
      weight int(4),     
      PRIMARY KEY (email,name,team)
-     );      
+     );
