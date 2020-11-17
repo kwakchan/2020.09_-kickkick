@@ -126,10 +126,10 @@ app.post('/matching/create_process', function(request, response){
   var title = post.form_title;
   var date = post.form_date;
   var time = post.form_time;
-  var content = post.form_content;
+  var contents = post.form_contents;
   
-  sql = "INSERT INTO matching (title, date, time, content) VALUES(?,?,?,?);";
-  db.query(sql,[title, date, time, content],function(error, result){
+  sql = "INSERT INTO matching (title, date, time, contents) VALUES(?,?,?,?);";
+  db.query(sql,[title, date, time, contents],function(error, result){
       if(error){
         throw error;
       }
@@ -146,13 +146,13 @@ app.get('/matching/matching_management', function(request, response){
     var title = topic[0].title;
     var date = topic[0].date;
     var time = topic[0].time;
-    var content = topic[0].content;        
+    var contents = topic[0].contents;        
     var queryData_id = queryData.id;
     
     if(error2){
       throw error;
     }
-    var matching_management = matching_management_template.HTML(title, date, time, content, queryData_id);
+    var matching_management = matching_management_template.HTML(title, date, time, contents, queryData_id);
     response.send(matching_management);  
   });    
 });
@@ -165,13 +165,13 @@ app.get('/matching/matching_management/update', function(request, response){
     var title = topic[0].title;
     var date = topic[0].date;
     var time = topic[0].time;
-    var content = topic[0].content;
+    var contents = topic[0].contents;
     var queryData_id = queryData.id;        
     
     if(error2){
       throw error;
     }
-    var matching_management_update = matching_management_update_template.HTML(title, date, time, content, queryData_id);
+    var matching_management_update = matching_management_update_template.HTML(title, date, time, contents, queryData_id);
     response.writeHead(200);
     response.end(matching_management_update); 
   });   
@@ -185,11 +185,11 @@ app.post('/matching/matching_management/update_process', function(request, respo
   var title = post.update_title;
   var date = post.update_date;
   var time = post.update_time;
-  var content = post.update_content;
+  var contents = post.update_contents;
   var queryData_id = queryData.id;
 
-  db.query('UPDATE matching SET title=?, date=?, time=?, content=? WHERE id=?',
-  [title, date, time, content, queryData_id], function(error, result){
+  db.query('UPDATE matching SET title=?, date=?, time=?, contents=? WHERE id=?',
+  [title, date, time, contents, queryData_id], function(error, result){
     response.writeHead(302, {Location: `/matching`});
     response.end();
   }) 
@@ -235,10 +235,10 @@ app.post('/hero/create_process', function(request, response){
   var name = post.form_name;
   var date = post.form_date;
   var time = post.form_time;
-  var content = post.form_content;
+  var contents = post.form_contents;
   
-  sql = "INSERT INTO hero (name, date, time, content) VALUES(?,?,?,?);";
-  db.query(sql,[name, date, time, content],function(error, result){
+  sql = "INSERT INTO hero (name, date, time, contents) VALUES(?,?,?,?);";
+  db.query(sql,[name, date, time, contents],function(error, result){
       if(error){
         throw error;
       }
@@ -255,13 +255,13 @@ app.get("/hero/hero_management", function(request, response){
     var name = topic[0].name;
     var date = topic[0].date;
     var time = topic[0].time;
-    var content = topic[0].content;        
+    var contents = topic[0].contents;        
     var queryData_id = queryData.id;
     
     if(error2){
       throw error;
     }
-  var hero_management = hero_management_template.HTML(name, date, time, content, queryData_id);
+  var hero_management = hero_management_template.HTML(name, date, time, contents, queryData_id);
   response.send(hero_management);
  }); 
 });
@@ -274,13 +274,13 @@ app.get("/hero/hero_management/update", function(request, response){
     var name = topic[0].name;
     var date = topic[0].date;
     var time = topic[0].time;
-    var content = topic[0].content;
+    var contents = topic[0].contents;
     var queryData_id = queryData.id;        
     
     if(error2){
       throw error;
     }
-    var hero_management_update = hero_management_update_template.HTML(name, date, time, content, queryData_id);
+    var hero_management_update = hero_management_update_template.HTML(name, date, time, contents, queryData_id);
     response.send(hero_management_update); 
   });     
 });
@@ -293,11 +293,11 @@ app.post('/hero/hero_management/update_process', function(request, response){
   var name = post.update_name;
   var date = post.update_date;
   var time = post.update_time;
-  var content = post.update_content;
+  var contents = post.update_contents;
   var queryData_id = queryData.id;
-  console.log(name, date, time, content, queryData_id);
+  console.log(name, date, time, contents, queryData_id);
   
-  db.query('UPDATE hero SET name=?, date=?, time=?, content=? WHERE id=?', [name, date, time, content, queryData_id], function(error, result){
+  db.query('UPDATE hero SET name=?, date=?, time=?, contents=? WHERE id=?', [name, date, time, contents, queryData_id], function(error, result){
     response.writeHead(302, {Location: `/hero`});
     response.end();
   })
