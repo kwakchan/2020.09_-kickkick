@@ -3,8 +3,9 @@ create table matching(
      title varchar(30) not null,
      date date,
      time time,
-     content text(80),
-    PRIMARY KEY (id)
+     contents text(80),
+     team varchar(10),
+     PRIMARY KEY (id)
      );
 
 create table hero(
@@ -12,8 +13,8 @@ create table hero(
      name varchar(30) not null,
      date date,
      time time,
-     content text(80),
-    PRIMARY KEY (id)
+     contents text(80),
+     PRIMARY KEY (id)
      );     
 
 create table user(
@@ -25,5 +26,5 @@ create table user(
      position varchar(4),
      height int(4),
      weight int(4),     
-     PRIMARY KEY (email)
-     );          
+     PRIMARY KEY (email,name,team)
+     );
