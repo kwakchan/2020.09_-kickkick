@@ -8,6 +8,8 @@ var router = express.Router()
 var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
 
+var header_template = require('./components/header.js')
+var footer_template = require('./components/footer.js')
 var login_template = require('./lib/login.js')
 var matching_template = require('./lib/matching.js');
 var matching_make_template = require('./lib/matching_make.js');
@@ -137,19 +139,24 @@ app.post('/login/register_process', function (request, response) {
     if (error) {
       throw error;
     }
-    response.writeHead(302, { Location: `/login` });
+    response.redirect(307, '/login');
     response.end();
   });
 });
 
 // matching 리스트--------------------------------------------
 app.get('/matching', function (request, response) {
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+
   db.query(`SELECT * FROM matching`, function (error, topics) {
     if (error) {
       throw error;
     }
+    var header = header_template.header();
+    var footer = footer_template.footer(queryData_email);
     var list = matching_template.list(topics);
-    var matching = matching_template.HTML(list);
+    var matching = matching_template.HTML(header, footer, list, queryData_email);
     response.send(matching);
   });
 });
@@ -173,8 +180,7 @@ app.post('/matching/create_process', function (request, response) {
     if (error) {
       throw error;
     }
-    response.writeHead(302, { Location: `/matching` });
-    response.end();
+    response.redirect(`/matching`);
   });
 });
 
@@ -260,20 +266,32 @@ app.get('/hero', function (request, response) {
     if (error) {
       throw error;
     }
+    var header = header_template.header();
+    var footer = footer_template.footer(queryData_email);
     var list = hero_template.list(topics);
-    var hero = hero_template.HTML(list, queryData_email);
+    var hero = hero_template.HTML(header, footer, list, queryData_email);
     response.send(hero);
   });
 });
 
 //hero 방만들기
 app.get('/hero/hero_make', function (request, response) {
-  var hero_make = hero_make_template.HTML();
+  var queryData = url.parse(request.url, true).query; 
+  var queryData_email = queryData.email;
+  
+  db.query(`SELECT name FROM user where email=?`, [queryData_email], function(error2,users){
+    if(error2){
+      throw error2;
+    }
+  var hero_make = hero_make_template.HTML(users, queryData_email);
   response.send(hero_make);
+  });
 });
 
 //hero 방만들기 프로세스
 app.post('/hero/create_process', function (request, response) {
+  var queryData = url.parse(request.url, true).query; 
+  var queryData_email = queryData.email;
   var post = request.body;
   var name = post.form_name;
   var date = post.form_date;
@@ -300,6 +318,7 @@ app.get("/hero/hero_management", function (request, response) {
     var time = topic[0].time;
     var contents = topic[0].contents;
     var queryData_id = queryData.id;
+    
 
     if (error2) {
       throw error;
@@ -361,6 +380,7 @@ app.get('/hero/hero_management/delete_process', function (request, response) {
   });
 });
 
+
 //team 팀 -------------------------------------
 app.get('/team', function (request, response) {
   var team = require('./lib/team');
@@ -389,6 +409,7 @@ app.get('/chat', function (request, response) {
 app.get('/user', function(request, response){
   var queryData = url.parse(request.url, true).query; 
   var queryData_email = queryData.email;
+
   var image_directroy = "./uploads"
   var image_name = "/A.jpg"
   var image = image_directroy+image_name;
@@ -396,11 +417,13 @@ app.get('/user', function(request, response){
     if(error1){
       throw error1;
     }
-    db.query(`SELECT * FROM user where email=?`, [queryData.email], function(error2,users){
+    db.query(`SELECT * FROM user where email=?`, [queryData_email], function(error2,users){
       if(error2){
         throw error2;
       }
-    var user = user_template.HTML(users, queryData_email, image);
+    var header = header_template.header();
+    var footer = footer_template.footer(queryData_email);  
+    var user = user_template.HTML(header, footer,users, queryData_email, image);
     response.send(user);
     });  
   });  
