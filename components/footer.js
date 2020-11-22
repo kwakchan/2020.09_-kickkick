@@ -21,7 +21,7 @@ module.exports = {
 					</td>
 
 					<td> <a href="/hero?email=${queryData_email}"> 
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/hero.jpg" height="65px" width="65px"> 
+							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/hero.png" height="65px" width="65px"> 
 						</a>
 					</td>
 
