@@ -1,0 +1,20 @@
+module.exports = {
+	header: function() {
+		return`
+			<style type="text/css">
+				#header{
+					background: white;
+					font-family: HY동녘B;
+
+					display: flex;
+					justify-content: center;
+				}
+			</style>
+
+			<div data-role="header" data-position="fixed" id="header">
+					<h1>킥킥</h1>
+					<h6>Kick Kick</h6>
+			</div>
+		`;
+	}
+}

@@ -26,5 +26,5 @@ create table user(
      position varchar(4),
      height int(4),
      weight int(4),     
-     PRIMARY KEY (email,name,team)
+     PRIMARY KEY (email)
      );
