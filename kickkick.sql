@@ -20,7 +20,7 @@ create table hero(
 
 create table user(
      email varchar(30) not null,
-     password  varchar(30) not null,
+     password  varchar(80) not null,
      name varchar(30) not null,
      age varchar(10),
      team varchar(10),
@@ -29,3 +29,10 @@ create table user(
      weight int(4),     
      PRIMARY KEY (email)
      );
+
+create table team(
+     team_name varchar(30) not null,
+     area  varchar(30) not null,    
+     hashing varchar(80),
+     PRIMARY KEY (team_name)
+     );     
