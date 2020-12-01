@@ -22,6 +22,7 @@ create table user(
      email varchar(30) not null,
      password  varchar(80) not null,
      name varchar(30) not null,
+     image varchar(30),
      age varchar(10),
      team varchar(10),
      position varchar(4),

@@ -28,6 +28,7 @@ var hero_management_update_template = require('./lib/hero_management_update.js')
 var user_template = require('./lib/user.js');
 var user_update_template = require('./lib/user_update.js');
 
+// mySQL 데이터베이스 
 var mysql = require('mysql');
 var db = mysql.createConnection({
   connectionLimit: 10,
@@ -39,8 +40,8 @@ var db = mysql.createConnection({
 });
 db.connect();
 
+// multer 파일올리기
 var multer = require('multer'); // 파일 올리기 모듈
-const team = require('./lib/team.js');
 var _storage = multer.diskStorage({
   destination: function (req, file, cb) { // 저장될 경로
     cb(null, 'uploads/');   // uploads 폴더로
@@ -51,13 +52,25 @@ var _storage = multer.diskStorage({
 })
 var upload = multer({ storage: _storage })
 
-app.use('/upload', express.static('uploads')); // uploads 폴더의 파일 불러오기
+// 파일 불러오기
+app.use('/uploads', express.static('uploads')); // uploads 폴더 이미지 서버로 올리기
+app.use('/img', express.static('img')); // img 폴더 이미지 서버로 올리기
+
 app.get('/upload', function (request, response) {
-  response.render('upload');
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+  response.render(`upload?email=${queryData_email}`);
 });
+
 app.post('/upload', upload.single('userfile'), function (request, response) {
-  response.send('Uploaded! : ' + request.file.filename);
-  //response.redirect(`/user?email=sgcks@naver.com`);
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+  console.log(queryData_email);
+  db.query(`UPDATE user SET image=? WHERE email=?;`, [request.file.filename, queryData_email], function (error, data) {
+    if (error) throw error
+    response.redirect(`/user?email=${queryData_email}`);
+  });
+  // console.log(request.file.filename);
 });
 
 // Loading 로딩----------------------------------------------
@@ -424,12 +437,13 @@ app.get('/team', function (request, response) {
   var queryData_email = queryData.email;
 
   db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error, users) {
+    var image_name = users[0].image;
     if (error) {
       throw error
     }
     var header = header_template.header();
     var footer = footer_template.footer(queryData_email);
-    var team = team_template.HTML(header, footer, queryData_email, users);
+    var team = team_template.HTML(header, footer, queryData_email, users, image_name);
     response.send(team);
   });
 });
@@ -442,7 +456,6 @@ app.get('/team/team_make', function (request, response) {
   var team_make = team_make_template.HTML(queryData_email);
   response.send(team_make);
 });
-
 //team 팀 생성하기 프로세스
 app.post('/team/team_make_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
@@ -454,12 +467,24 @@ app.post('/team/team_make_process', function (request, response) {
 
   var sql = "INSERT INTO team (team_name, area) VALUES(?,?);";
   var params = [team_name, area];
-  db.query(sql, params, function (err, rows) {
-    if (err) throw err;
-    response.redirect(`/team?email=${queryData_email}`);
+  db.query('SELECT * FROM team where team_name=?', [team_name], function (err, rows) {
+    if (rows.length) {
+      msg.info(team_name + '팀이 존재합니다');
+      response.redirect(`/team/team_make?email=${queryData_email}`);
+    }
+    else {
+      db.query(sql, params, function (err, rows) {
+        if (err) throw err;
+        db.query("UPDATE user SET team=?, area=? WHERE email=?", [team_name, area, queryData_email], function (err, rows) {
+          if (err) throw err;
+          else {
+            response.redirect(`/team?email=${queryData_email}`);
+          }
+        });
+      });
+    }
   });
 });
-
 
 //team 팀 가입하기 
 app.get('/team/team_register', function (request, response) {
@@ -519,22 +544,15 @@ app.get('/user', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
 
-  var image_directroy = "./uploads"
-  var image_name = "/A.jpg"
-  var image = image_directroy + image_name;
-  fs.readFile(image_directroy + image_name, 'utf8', function (error1, profile_img) {
-    if (error1) {
-      throw error1;
+  db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error, users) {
+    var image_name = users[0].image
+    if (error) {
+      throw error;
     }
-    db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error2, users) {
-      if (error2) {
-        throw error2;
-      }
-      var header = header_template.header();
-      var footer = footer_template.footer(queryData_email);
-      var user = user_template.HTML(header, footer, users, queryData_email, image);
-      response.send(user);
-    });
+    var header = header_template.header();
+    var footer = footer_template.footer(queryData_email);
+    var user = user_template.HTML(header, footer, users, queryData_email, image_name);
+    response.send(user);
   });
 });
 

@@ -12,8 +12,7 @@ module.exports = {
 			</style>
 
 			<div data-role="header" data-position="fixed" id="header">
-					<h1>킥킥</h1>
-					<h6>Kick Kick</h6>
+				<img data-role="button" src="http://localhost:3000/img/logotxt.png" width="200em" height="100em">
 			</div>
 		`;
 	}
