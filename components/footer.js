@@ -16,27 +16,27 @@ module.exports = {
 			<table>
 				<tr>
 					<td> <a href="/matching?email=${queryData_email}">
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/matching.png" height="65px" width="65px"> 
+							<img data-role="button" src="http://localhost:3000/img/matching.png" height="65px" width="65px"> 
 						</a>
 					</td>
 
 					<td> <a href="/hero?email=${queryData_email}"> 
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/hero.png" height="65px" width="65px"> 
+							<img data-role="button" src="http://localhost:3000/img/hero.png" height="65px" width="65px"> 
 						</a>
 					</td>
 
 					<td> <a  href="/team?email=${queryData_email}">
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/team.png" height="65px" width="65px">
+							<img data-role="button" src="http://localhost:3000/img/team.png" height="65px" width="65px">
 						</a>
 					</td>
 
 					<td> <a href="/chat?email=${queryData_email}">
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/chat.png" height="65px" width="65px"> 
+							<img data-role="button" src="http://localhost:3000/img/chat.png" height="65px" width="65px"> 
 						</a>
 					</td>
 
 					<td> <a href="/user?email=${queryData_email}"> 
-							<img data-role="button" src="https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/user.png" height="65px" width="65px"> 
+							<img data-role="button" src="http://localhost:3000/img/user.png" height="65px" width="65px"> 
 						</a>
 					</td>
 				</tr>	
