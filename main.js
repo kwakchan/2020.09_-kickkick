@@ -550,7 +550,7 @@ app.get('/team/team_list', function (request, response) {
     var list = team_list_template.list(topics);
     var team_list = team_list_template.HTML(header, footer, list, queryData_email);
     response.send(team_list);
-  });
+  }); 
 });
 
 //team 내팀멤버 리스트
