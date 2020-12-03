@@ -558,16 +558,22 @@ app.get('/team/team_mymember', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
 
-  // db.query(`SELECT * FROM team`, function (error, topics) {
-  db.query('select user.* from user left join team on user.team = team.team_name where user.team =  ?', [team], function (err, rows) {
+  db.query(`SELECT * FROM user where email=? `,[queryData_email], function (error, users) {
     if (error) {
+      throw error;
+    }
+    var users_team = users[0].team; // 자신의 팀
+    db.query(`SELECT * FROM user WHERE team=?`,[users_team],function(error2, teams){
+    if(error2) {
       throw error;
     }
     var header = header_template.header();
     var footer = footer_template.footer(queryData_email);
-    var list = team_mymember_template.list(topics);
-    var team_mymember = team_mymember_template.HTML(header, footer, list, queryData_email);
+    var tn = team_mymember_template.tn(teams);
+    var list = team_mymember_template.list(teams);
+    var team_mymember = team_mymember_template.HTML(header, footer, tn, list, queryData_email);
     response.send(team_mymember);
+    });
   });
 });
 
@@ -582,7 +588,7 @@ app.get('/user', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
 
-  db.query(`SELECT * FROM user where team = ( SELECT team FROM user where email=? )`, [queryData_email], function (error, users) {
+  db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error, users) {
     var image_name = users[0].image
     if (error) {
       throw error;
