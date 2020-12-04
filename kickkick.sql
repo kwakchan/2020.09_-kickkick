@@ -28,12 +28,16 @@ create table user(
      position varchar(4),
      height int(4),
      weight int(4),     
-     PRIMARY KEY (email)
+     PRIMARY KEY (email),
+     FOREIGN KEY (team) REFERENCES team (team_name)
      );
 
 create table team(
      team_name varchar(30) not null,
      area  varchar(30) not null,    
      hashing varchar(80),
+     team_image varchar(30),
      PRIMARY KEY (team_name)
-     );     
+     );    
+
+select * FROM user AS A INNER JOIN team AS B ON A.team = B.team_name where email=?     

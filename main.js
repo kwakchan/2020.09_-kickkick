@@ -18,13 +18,15 @@ var matching_template = require('./lib/matching.js');
 var matching_make_template = require('./lib/matching_make.js');
 var matching_management_template = require('./lib/matching_management.js');
 var matching_management_update_template = require('./lib/matching_management_update.js');
-var team_template = require('./lib/team.js');
-var team_make_template = require('./lib/team_make.js');
-var team_register_template = require('./lib/team_register.js');
 var hero_template = require('./lib/hero.js');
 var hero_make_template = require('./lib/hero_make.js');
 var hero_management_template = require('./lib/hero_management.js');
+var hero_password_template = require('./lib/hero_password.js');
 var hero_management_update_template = require('./lib/hero_management_update.js');
+var team_template = require('./lib/team.js');
+var team_make_template = require('./lib/team_make.js');
+var team_register_template = require('./lib/team_register.js');
+var team_mymember_template = require('./lib/team_mymember.js');
 var user_template = require('./lib/user.js');
 var user_update_template = require('./lib/user_update.js');
 
@@ -52,10 +54,10 @@ var _storage = multer.diskStorage({
 })
 var upload = multer({ storage: _storage })
 
-// 파일 불러오기
-app.use('/uploads', express.static('uploads')); // uploads 폴더 이미지 서버로 올리기
 app.use('/img', express.static('img')); // img 폴더 이미지 서버로 올리기
+app.use('/uploads', express.static('uploads')); // uploads 폴더 이미지 서버로 올리기
 
+// 유저이미지 불러오기
 app.get('/upload', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
@@ -70,8 +72,29 @@ app.post('/upload', upload.single('userfile'), function (request, response) {
     if (error) throw error
     response.redirect(`/user?email=${queryData_email}`);
   });
-  // console.log(request.file.filename);
 });
+
+// 팀이미지 불러오기
+app.get('/team_upload', function (request, response) {
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+  response.render(`team_upload?email=${queryData_email}`);
+});
+
+app.post('/team_upload', upload.single('userfile'), function (request, response) {
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+  db.query(`SELECT * FROM user WHERE email=?`,[queryData_email],function (error, users){
+    if(error) throw error;
+    var user_team = users[0].team;
+    console.log(user_team);
+    // db.query(`UPDATE team SET team_image=? WHERE team_name=?;`, [request.file.filename, user_team], function (error, data) {
+    //   if (error) throw error
+    //   response.redirect(`/team/team_mymember?email=${queryData_email}`);
+    // });
+  });
+});
+
 
 // Loading 로딩----------------------------------------------
 app.get('/', function (request, response) {
@@ -134,7 +157,8 @@ app.post('/login/register_process', function (request, response) {
         });
       } else {
         dup = '아이디 중복입니다';
-        var register = login_register_template.HTML(dup);
+        var result = dup.fontcolor("red");
+        var register = login_register_template.HTML(result);
         response.send(register);
       }
     });
@@ -166,7 +190,7 @@ app.post('/matching_search', function (request, response) {
   var date = post.date;
   var time = post.time;
 
-  db.query(`select * from hero where date=? or time=?`, [date, time], function (error, find) {
+  db.query(`select * from matching where date=? or time=?`, [date, time], function (error, find) {
     if (error) {
       throw error;
     }
@@ -295,9 +319,7 @@ app.get('/hero', function (request, response) {
     }
     var header = header_template.header();
     var footer = footer_template.footer(queryData_email);
-    var list = hero_template.list(topics);
-    // var date = hero_template.date(topics);
-    // console.log(date);
+    var list = hero_template.list(topics, queryData_email);
     var hero = hero_template.HTML(header, footer, list, queryData_email);
     response.send(hero);
   });
@@ -353,7 +375,7 @@ app.post('/hero/create_process', function (request, response) {
     if (error) {
       throw error;
     }
-    response.writeHead(302, { Location: `/hero` });
+    response.writeHead(302, {Location:`/hero?email=${queryData_email}`});
     response.end();
   });
 });
@@ -361,20 +383,58 @@ app.post('/hero/create_process', function (request, response) {
 //hero 관리(수정, 삭제)
 app.get("/hero/hero_management", function (request, response) {
   var queryData = url.parse(request.url, true).query;
+  var queryData_id = queryData.id;
+  var queryData_email = queryData.email;
 
-  db.query(`SELECT * FROM hero where id=?`, [queryData.id], function (error2, topic) {
+  db.query(`SELECT * FROM hero where id=?`, [queryData_id], function (error2, topic) {
+    if (error2) {
+      throw error;
+    }
     var title = topic[0].title;
     var name = topic[0].name;
     var date = topic[0].date;
     var time = topic[0].time;
-    var contents = topic[0].contents;
-    var queryData_id = queryData.id;
-
-    if (error2) {
-      throw error;
-    }
-    var hero_management = hero_management_template.HTML(title, name, date, time, contents, queryData_id);
+    var contents = topic[0].contents; 
+    var hero_management = hero_management_template.HTML(title, name, date, time, contents, queryData_id, queryData_email);
     response.send(hero_management);
+  });
+});
+
+//hero 패스워드
+app.get('/hero/hero_management/password', function (request, response) {
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+  var queryData_id = queryData.id
+  var hero_password = hero_password_template.HTML(queryData_id, queryData_email);
+    response.send(hero_password);
+});
+
+//hero 패스워드프로세스
+app.post('/hero/hero_management/password_process', function(request, response){
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+  var queryData_id = queryData.id
+  var post = request.body;
+  var password = post.password;
+  console.log(queryData_email);
+  console.log(queryData_id);
+  console.log(password);
+
+  bcrypt.hash(password, null, null, function (err, hash) {
+    db.query('SELECT * FROM user where email=?', [queryData_email], function(error1, users){
+      if (error1) throw error1; 
+      console.log(users[0].password);
+      console.log(hash);
+      // bcrypt.compare(password, users[0].password, function(error2, response){
+      //   if (error2) throw error2;
+      //   if(response) {
+      //     console.log('response');
+      //     response.redirect(`/hero/hero_management_update?id=${queryData_id}`);
+      //   } else {
+      //     console.log('err');
+      //   }
+      // });
+    });
   });
 });
 
@@ -435,17 +495,64 @@ app.get('/hero/hero_management/delete_process', function (request, response) {
 app.get('/team', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
-
-  db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error, users) {
-    var image_name = users[0].image;
-    if (error) {
-      throw error
+  db.query(`SELECT * FROM user WHERE email = ?`,[queryData_email],function(error1, users){  
+    if (error1) throw error1;
+    var user_image = users[0].image;
+    if(users[0].team == null){ // 팀이 없으면 'No' Team으로 가입(insert into team (team_name, area) values('No','No');)
+      db.query(`UPDATE user SET team='No' WHERE email=?`,[queryData_email],function(error2, teams){
+        if (error2) throw error2;
+        var team_image = null;
+        var header = header_template.header();
+        var footer = footer_template.footer(queryData_email);
+        var team = team_template.HTML(header, footer, queryData_email, users, user_image, team_image);
+        response.send(team);
+      });
+    } else { 
+      db.query(`SELECT * FROM team WHERE team_name = ?`,[users[0].team],function(error2, teams){  
+      if (error2) throw error2;
+      var user_image = users[0].image;
+      var team_image = teams[0].team_image;
+      var header = header_template.header();
+      var footer = footer_template.footer(queryData_email);
+      var team = team_template.HTML(header, footer, queryData_email, users, user_image, team_image);
+      response.send(team);
+      });    
     }
-    var header = header_template.header();
-    var footer = footer_template.footer(queryData_email);
-    var team = team_template.HTML(header, footer, queryData_email, users, image_name);
-    response.send(team);
   });
+});
+
+//team 내 팀멤버 리스트
+app.get('/team/team_mymember', function (request, response) {
+  var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
+  db.query(`SELECT * FROM user where email=?`,[queryData_email], function (error, users) {
+    if (error) {
+      throw error;
+    }
+    var users_team = users[0].team; // 자신의 팀
+    db.query(`SELECT * FROM user WHERE team=?`,[users_team],function(error2, teams){
+      if(error2) {
+        throw error;
+      }
+      db.query(`SELECT * FROM team WHERE team_name=?`,[users_team],function(error3, team){
+        if(error3) {
+          throw error;
+        }
+        var header = header_template.header();
+        var footer = footer_template.footer(queryData_email);
+        var list = team_mymember_template.list(teams);
+        var team_image = team[0].team_image;
+        var team_mymember = team_mymember_template.HTML(header, footer, users_team, list, team_image, queryData_email);
+        response.send(team_mymember);
+      });
+    });
+  });
+});
+
+//team 프로필
+app.get('/team/team_management_profile', function (request, response) {
+  var team_management_profile = require('./lib/team_management_profile');
+  response.send(team_management_profile);
 });
 
 //team 팀 생성하기
@@ -456,6 +563,7 @@ app.get('/team/team_make', function (request, response) {
   var team_make = team_make_template.HTML(queryData_email);
   response.send(team_make);
 });
+
 //team 팀 생성하기 프로세스
 app.post('/team/team_make_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
@@ -464,18 +572,16 @@ app.post('/team/team_make_process', function (request, response) {
   var post = request.body;
   var team_name = post.team_name; //팀명
   var area = post.area; //지역
-
-  var sql = "INSERT INTO team (team_name, area) VALUES(?,?);";
-  var params = [team_name, area];
+  
   db.query('SELECT * FROM team where team_name=?', [team_name], function (err, rows) {
     if (rows.length) {
       msg.info(team_name + '팀이 존재합니다');
       response.redirect(`/team/team_make?email=${queryData_email}`);
     }
     else {
-      db.query(sql, params, function (err, rows) {
+      db.query("INSERT INTO team (team_name, area) VALUES(?,?);", [team_name, area], function (err, rows) {
         if (err) throw err;
-        db.query("UPDATE user SET team=?, area=? WHERE email=?", [team_name, area, queryData_email], function (err, rows) {
+        db.query("UPDATE user SET team=? WHERE email=?", [team_name, queryData_email], function (err, rows) {
           if (err) throw err;
           else {
             response.redirect(`/team?email=${queryData_email}`);
@@ -491,8 +597,14 @@ app.get('/team/team_register', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
 
-  var team_register = team_register_template.HTML(queryData_email);
-  response.send(team_register);
+  db.query(`SELECT * FROM team`, function (error, topics) {
+    if (error) throw error;
+    var header = header_template.header();
+    var footer = footer_template.footer(queryData_email);
+    var list = team_register_template.list(topics);
+    var team_register = team_register_template.HTML(header, footer, queryData_email, list);
+    response.send(team_register);
+  });  
 });
 
 //team 팀 가입하기 프로세스
