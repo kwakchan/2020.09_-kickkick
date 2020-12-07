@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 var header_template = require('./components/header.js')
 var footer_template = require('./components/footer.js')
+var start_template = require('./lib/start.js')
 var login_template = require('./lib/login.js')
 var login_register_template = require('./lib/login_register.js')
 var matching_template = require('./lib/matching.js');
@@ -103,8 +104,8 @@ app.post('/team_upload', upload.single('userfile'), function (request, response)
 // Loading 로딩----------------------------------------------
 app.get('/', function (request, response) {
   var dup ='';
-  var login = login_template.HTML(dup);
-  response.send(login);
+  var start = start_template.HTML(dup);
+  response.send(start);
 });
 
 // Login 로그인
@@ -177,16 +178,21 @@ app.post('/login/register_process', function (request, response) {
 app.get('/matching', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
-
+  
   db.query(`SELECT * FROM matching`, function (error, topics) {
     if (error) {
       throw error;
     }
-    var header = header_template.header();
-    var footer = footer_template.footer(queryData_email);
-    var list = matching_template.list(topics, queryData_email);
-    var matching = matching_template.HTML(header, footer, list, queryData_email);
-    response.send(matching);
+    db.query(`select count(*) from matching`, function (error, topic) {
+      var count = topic[0]['count(*)'];
+      var header = header_template.header();
+      var footer = footer_template.footer(queryData_email);
+      var list = matching_template.list(topics, queryData_email);
+      var detail = matching_template.detail(topics, queryData_email);
+      var matching = matching_template.HTML(header, footer, list, detail, count, queryData_email);
+      response.send(matching);
+    })
+    
   });
 });
 
