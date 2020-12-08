@@ -308,8 +308,8 @@ app.post('/hero/hero_management/password_process', function (request, response) 
         } else {
           dup = '비밀번호를 확인해주세요';
           var result = dup.fontcolor("red");
-          var hero_password = hero_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, result);
-          response.send(hero_password);
+          var matching_password = matching_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, result);
+          response.send(matching_password);
           console.log(result)
           console.log('err');
         }
