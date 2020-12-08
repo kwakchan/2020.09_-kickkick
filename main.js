@@ -286,7 +286,7 @@ app.get('/matching/matching_management/password', function (request, response) {
 });
 
 //matching 패스워드프로세스
-app.post('/hero/hero_management/password_process', function (request, response) {
+app.post('/matching/matching_management/password_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
   var queryData_id = queryData.id
