@@ -1,6 +1,12 @@
 module.exports = {
 	header: function(queryData_email) {
 		return`
+			<style>
+				.header--bg{
+					background-color: #1680f8;
+					background-size: 100% 100%;
+				}
+			</style>
 			<div class="container">
 				<nav class="navbar">
 					<div class="navbar-header">
