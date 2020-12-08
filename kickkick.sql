@@ -5,6 +5,7 @@ create table matching(
      time time not null,
      contents text(80),
      team varchar(10) not null,
+     writer_email VARCHAR (30),
      PRIMARY KEY (id)
      );
 
@@ -15,6 +16,7 @@ create table hero(
      time time not null,
      contents text(80),
      name varchar(30) not null,
+     writer_email VARCHAR (30),
      PRIMARY KEY (id)
      );     
 
@@ -39,5 +41,6 @@ create table team(
      team_image varchar(30),
      PRIMARY KEY (team_name)
      );    
-
+     
+insert into team(team_name, area) values('no','no');
 select * FROM user AS A INNER JOIN team AS B ON A.team = B.team_name where email=?     

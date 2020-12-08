@@ -1,47 +1,28 @@
 module.exports = {
-	footer: function(queryData_email) {
+	footer: function() {
 		return `
-
-		<style type="text/css">
-			#footer{
-				background: white;
-
-				display: flex;
-				justify-content: center;
-			}
-		</style>
-
-		<!--footer-->
-		<div data-role="footer" data-position="fixed" id="footer">
-			<table>
-				<tr>
-					<td> <a href="/matching?email=${queryData_email}">
-							<img data-role="button" src="http://localhost:3000/img/matching.png" height="65px" width="65px"> 
-						</a>
-					</td>
-
-					<td> <a href="/hero?email=${queryData_email}"> 
-							<img data-role="button" src="http://localhost:3000/img/hero.png" height="65px" width="65px"> 
-						</a>
-					</td>
-
-					<td> <a  href="/team?email=${queryData_email}">
-							<img data-role="button" src="http://localhost:3000/img/team.png" height="65px" width="65px">
-						</a>
-					</td>
-
-					<td> <a href="/chat?email=${queryData_email}">
-							<img data-role="button" src="http://localhost:3000/img/chat.png" height="65px" width="65px"> 
-						</a>
-					</td>
-
-					<td> <a href="/user?email=${queryData_email}"> 
-							<img data-role="button" src="http://localhost:3000/img/user.png" height="65px" width="65px"> 
-						</a>
-					</td>
-				</tr>	
-			</table>
-		</div>		
+			<div class="container">
+				<div class="row">
+					<div class="col-md-4 footer__left">
+						<a class="navbar-brand" href="#"></a>
+						<p>Copyright <span>&copy;</span> Dart themes 2020</p>
+					</div>
+					<div class="col-md-2 footer__link">
+						<li><a href="#">Design by Sum(island)</a></li>
+					</div>
+					<div class="col-md-2 footer__link">
+						<li><a href="#">chan, Kwak </a></li>
+						<li><a href="#">Minsu, kim</a></li>
+						<li><a href="#">SangUn, Lim</a></li>
+					</div>
+					<div class="col-md-4 footer__social-icons">
+						<li><a href="#"><i class="flaticon-facebook-letter-logo"></i></a></li>
+						<li><a href="#"><i class="flaticon-twitter-logo-silhouette"></i></a></li>
+						<li><a href="#"><i class="flaticon-google-plus"></i></a></li>
+						<li><a href="#"><i class="flaticon-pinterest-logo"></i></a></li>
+					</div>
+				</div>
+			</div>
 		`;
 	}
 }
