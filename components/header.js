@@ -1,31 +1,33 @@
 module.exports = {
-	header: function() {
+	header: function(queryData_email) {
 		return`
-
-			<style type="text/css">
-				#header{
-					background: white;
-					font-family: HY동녘B;
-
-					display: flex;
-					justify-content: center;
+			<style>
+				.header--bg{
+					background-color: #1680f8;
+					background-size: 100% 100%;
 				}
 			</style>
-			<script type="text/javascrpt">
-				function goBack(){
-					window.history.back();
-				}
-			</script>	
-			
-			<div data-role="header" data-position="fixed" id="header">
-				<table>
-					<tr>
-						<td> <button onClick="history.back(); return false;"> <img src="http://localhost:3000/img/back.png" width="25em" height="25em"> </button> </td>
-						<td> <img src="http://localhost:3000/img/logotxt.png" width="200em" height="100em"> </td>
-					</tr>
-				</table>
+			<div class="container">
+				<nav class="navbar">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span> 
+						</button>
+						<a class="navbar-brand" href="#"></a>
+					</div>
+					<div class="collapse navbar-collapse" id="myNavbar">
+						<ul class="nav navbar-nav pull-right">
+							<li><a href="/">Logout</a></li>
+							<li><a href="/matching?email=${queryData_email}">MATCHING</a></li>
+							<li><a href="/hero?email=${queryData_email}">HERO</a></li>
+							<li><a href="/team?email=${queryData_email}">TEAM</a></li>
+							<li><a href="/user?email=${queryData_email}">MYPAGE</a></li>
+						</ul>
+					</div>
+				</nav>
 			</div>
-
 		`;
 	}
 }

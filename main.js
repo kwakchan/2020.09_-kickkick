@@ -59,7 +59,7 @@ var _storage = multer.diskStorage({
 var upload = multer({ storage: _storage })
 
 app.use('/img', express.static('img')); // img 폴더 이미지 서버로 올리기
-app.use('/uploads', express.static('uploads')); // uploads 폴더 이미지 서버로 올리기
+app.use('/uploads', express.static('uploads')); // uploads 폴더 이미지 서버로 올리기 
 
 // 유저이미지 불러오기
 app.get('/upload', function (request, response) {
@@ -103,14 +103,14 @@ app.post('/team_upload', upload.single('userfile'), function (request, response)
 
 // Loading 로딩----------------------------------------------
 app.get('/', function (request, response) {
-  var dup ='';
-  var start = start_template.HTML(dup);
+  var footer = footer_template.footer();
+  var start = start_template.HTML(footer);
   response.send(start);
 });
 
 // Login 로그인
 app.get('/login', function (request, response) {
-  var dup ='';
+  var dup = '';
   var login = login_template.HTML(dup);
   response.send(login);
 });
@@ -120,16 +120,14 @@ app.post('/login/login_process', function (request, response) {
   var post = request.body;
   var email = post.email;
   var password = post.password;
-  var sql = 'SELECT * FROM user where email=?';
 
-  db.query(sql, [email], function (error, rows) {
+  db.query('SELECT * FROM user where email=?', [email], function (error, rows) {
     if (error) throw error;
     if (rows.length) {
       bcrypt.compare(password, rows[0].password, function (err, res) {
         if (res) {
           response.redirect(`/user?email=${email}`);
         } else {
-          //response.send('<script type="text/javascript">alert("비밀번호 확인");</script>');
           dup = '아이디와 비밀번호를 확인해주세요';
           var result = dup.fontcolor("red");
           var login = login_template.HTML(result);
@@ -155,12 +153,13 @@ app.post('/login/register_process', function (request, response) {
   var name = post.name;
 
   bcrypt.hash(password, null, null, function (err, hash) {
-    db.query("SELECT * FROM user WHERE email=?", [email], function (err, data) {
+    db.query("SELECT * FROM user WHERE email=?", [email], function (error1, data) {
+      if (error1) throw error1;
       if (data.length == 0) {
         var sql = "INSERT INTO user (email, password, name) VALUES(?,?,?);";
         var params = [email, hash, name];
-        db.query(sql, params, function (err, rows) {
-          if (err) throw err;
+        db.query(sql, params, function (error2, rows) {
+          if (error2) throw error2;
           response.redirect(`/login`);
 
         });
@@ -178,21 +177,20 @@ app.post('/login/register_process', function (request, response) {
 app.get('/matching', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
-  
+
   db.query(`SELECT * FROM matching`, function (error, topics) {
-    if (error) {
-      throw error;
-    }
-    db.query(`select count(*) from matching`, function (error, topic) {
+    if (error) throw error;
+    db.query(`SELECT count(*) from matching`, function (error2, topic) {
+      if (error2) throw error2;
       var count = topic[0]['count(*)'];
-      var header = header_template.header();
-      var footer = footer_template.footer(queryData_email);
+      var header = header_template.header(queryData_email);
+      var footer = footer_template.footer();
       var list = matching_template.list(topics, queryData_email);
       var detail = matching_template.detail(topics, queryData_email);
       var matching = matching_template.HTML(header, footer, list, detail, count, queryData_email);
       response.send(matching);
     })
-    
+
   });
 });
 
@@ -205,11 +203,9 @@ app.post('/matching_search', function (request, response) {
   var time = post.time;
 
   db.query(`select * from matching where date=? or time=?`, [date, time], function (error, find) {
-    if (error) {
-      throw error;
-    }
-    var header = header_template.header();
-    var footer = footer_template.footer(queryData_email);
+    if (error)  throw error;
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
     var list = hero_template.list(find);
     var matching = matching_template.HTML(header, footer, list, queryData_email);
     response.send(matching);
@@ -221,10 +217,10 @@ app.get('/matching/matching_make', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
   db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error2, users) {
-    if (error2) {
-      throw error2;
-    }
-    var matching_make = matching_make_template.HTML(users, queryData_email);
+    if (error2) throw error2;
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
+    var matching_make = matching_make_template.HTML(header, footer, users, queryData_email);
     response.send(matching_make);
   });
 });
@@ -243,11 +239,8 @@ app.post('/matching/create_process', function (request, response) {
 
   sql = "INSERT INTO matching (title, team, date, time, contents, writer_email) VALUES(?,?,?,?,?,?);";
   db.query(sql, [title, team, date, time, contents, writer_email], function (error, result) {
-    if (error) {
-      throw error;
-    }
-    response.writeHead(302, { Location: `/matching?email=${queryData_email}` });
-    response.end();
+    if (error) throw error;
+    response.redirect(`/matching?email=${queryData_email}`);
   });
 });
 
@@ -258,6 +251,7 @@ app.get('/matching/matching_management', function (request, response) {
   var queryData_email = queryData.email;
 
   db.query(`SELECT * FROM matching where id=?`, [queryData_id], function (error2, topic) {
+    if (error2) throw error;
     var title = topic[0].title;
     var date = topic[0].date;
     var time = topic[0].time;
@@ -265,11 +259,9 @@ app.get('/matching/matching_management', function (request, response) {
     var queryData_id = queryData.id;
     var team = topic[0].team;
     var writer_email = topic[0].writer_email;
-
-    if (error2) {
-      throw error;
-    }
-    var matching_management = matching_management_template.HTML(title, team, date, time, contents, writer_email, queryData_id, queryData_email);
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
+    var matching_management = matching_management_template.HTML(header, footer, title, team, date, time, contents, writer_email, queryData_id, queryData_email);
     response.send(matching_management);
   });
 });
@@ -281,7 +273,10 @@ app.get('/matching/matching_management/password', function (request, response) {
   var queryData_id = queryData.id
   var queryData_writer_email = queryData.writer_email;
   dup = '';
-  var matching_password = matching_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, dup);
+
+  var header = header_template.header(queryData_email);
+  var footer = footer_template.footer();
+  var matching_password = matching_password_template.HTML(header, footer, queryData_id, queryData_email, queryData_writer_email, dup);
   response.send(matching_password);
 });
 
@@ -293,25 +288,18 @@ app.post('/matching/matching_management/password_process', function (request, re
   var queryData_writer_email = queryData.writer_email;
   var post = request.body;
   var password = post.password;
-  console.log(queryData_email);
-  console.log(queryData_id);
-  console.log(password);
-  console.log(queryData_writer_email);
 
   db.query('SELECT * FROM user where email =?', [queryData_writer_email], function (err, rows) {
     if (err) throw err;
     if (rows.length) {
-      bcrypt.compare(password, rows[0].password, function (error2, res) {
+      bcrypt.compare(password, rows[0].password, function (err, res) {
         if (res) {
-          console.log('성공');
-          response.redirect(`/matching/matching_management/update?id=${queryData_id}`);
+          response.redirect(`/matching/matching_management?id=${queryData_id}&email=${queryData_email}&writer=${queryData_writer_email}`);
         } else {
           dup = '비밀번호를 확인해주세요';
           var result = dup.fontcolor("red");
           var matching_password = matching_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, result);
           response.send(matching_password);
-          console.log(result)
-          console.log('err');
         }
       });
     }
@@ -321,8 +309,9 @@ app.post('/matching/matching_management/password_process', function (request, re
 //matching 관리 방수정
 app.get('/matching/matching_management/update', function (request, response) {
   var queryData = url.parse(request.url, true).query;
-
-  db.query(`SELECT * FROM matching where id=?`, [queryData.id], function (error2, topic) {
+  var queryData_email = queryData.email;
+  db.query(`SELECT * FROM matching where id=?`, [queryData.id], function (error1, topic) {
+    if (error1) throw error1;
     var title = topic[0].title;
     var date = topic[0].date;
     var time = topic[0].time;
@@ -330,18 +319,17 @@ app.get('/matching/matching_management/update', function (request, response) {
     var team = topic[0].team;
     var queryData_id = queryData.id;
 
-    if (error2) {
-      throw error;
-    }
-    var matching_management_update = matching_management_update_template.HTML(title, team, date, time, contents, queryData_id);
-    response.writeHead(200);
-    response.end(matching_management_update);
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
+    var matching_management_update = matching_management_update_template.HTML(header, footer, title, team, date, time, contents, queryData_id, queryData_email);
+    response.send(matching_management_update);
   });
 });
 
 //matching 관리 방수정 프로세스
 app.post('/matching/matching_management/update_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
 
   var post = request.body;
   var title = post.update_title;
@@ -352,24 +340,19 @@ app.post('/matching/matching_management/update_process', function (request, resp
   var queryData_id = queryData.id;
 
   db.query('UPDATE matching SET title=?, team=?, date=?, time=?, contents=? WHERE id=?', [title, team, date, time, contents, queryData_id], function (error, result) {
-    response.writeHead(302, { Location: `/matching` });
-    response.end();
-  })
-
+    response.redirect(`/matching?email=${queryData_email}`);
+  });
 });
 
 //matching 관리 방삭제 프로세스
 app.get('/matching/matching_management/delete_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
-
+  var queryData_email = queryData.email;
   var post = request.body;
   var queryData_id = queryData.id;
   db.query('DELETE FROM matching WHERE id = ?', [queryData_id], function (error, result) {
-    if (error) {
-      throw error;
-    }
-    response.writeHead(302, { Location: `/matching` });
-    response.end();
+    if (error) throw error;
+    response.redirect(`/matching?email=${queryData_email}`);
   });
 });
 
@@ -379,14 +362,16 @@ app.get('/hero', function (request, response) {
   var queryData_email = queryData.email;
 
   db.query(`SELECT * FROM hero`, function (error, topics) {
-    if (error) {
-      throw error;
-    }
-    var header = header_template.header();
-    var footer = footer_template.footer(queryData_email);
-    var list = hero_template.list(topics, queryData_email);
-    var hero = hero_template.HTML(header, footer, list, queryData_email);
-    response.send(hero);
+    if (error) throw error;
+    db.query(`select count(*) from hero`, function (error, topic) {
+      var count = topic[0]['count(*)'];
+      var header = header_template.header(queryData_email);
+      var footer = footer_template.footer();
+      var list = hero_template.list(topics, queryData_email);
+      var detail = hero_template.detail(topics, queryData_email);
+      var hero = hero_template.HTML(header, footer, list, detail, count, queryData_email);
+      response.send(hero);
+    });
   });
 });
 
@@ -399,9 +384,7 @@ app.post('/hero_search', function (request, response) {
   var time = post.time;
 
   db.query(`select * from hero where date=? or time=?`, [date, time], function (error, find) {
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
     var header = header_template.header();
     var footer = footer_template.footer(queryData_email);
     var list = hero_template.list(find);
@@ -416,10 +399,10 @@ app.get('/hero/hero_make', function (request, response) {
   var queryData_email = queryData.email;
 
   db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error2, users) {
-    if (error2) {
-      throw error2;
-    }
-    var hero_make = hero_make_template.HTML(users, queryData_email);
+    if (error2) throw error2;
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
+    var hero_make = hero_make_template.HTML(header, footer, users, queryData_email);
     response.send(hero_make);
   });
 });
@@ -428,21 +411,19 @@ app.get('/hero/hero_make', function (request, response) {
 app.post('/hero/create_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
+
   var post = request.body;
+  var title = post.form_title;
   var name = post.form_name;
   var date = post.form_date;
   var time = post.form_time;
   var contents = post.form_contents;
-  var title = post.form_title;
   var writer_email = post.writer_email;
 
   sql = "INSERT INTO hero (title, name, date, time, contents, writer_email) VALUES(?,?,?,?,?,?);";
   db.query(sql, [title, name, date, time, contents, writer_email], function (error, result) {
-    if (error) {
-      throw error;
-    }
-    response.writeHead(302, { Location: `/hero?email=${queryData_email}` });
-    response.end();
+    if (error) throw error;
+    response.redirect(`/hero?email=${queryData_email}`);
   });
 });
 
@@ -453,16 +434,18 @@ app.get("/hero/hero_management", function (request, response) {
   var queryData_email = queryData.email;
 
   db.query(`SELECT * FROM hero where id=?`, [queryData_id], function (error2, topic) {
-    if (error2) {
-      throw error;
-    }
+    if (error2) throw error;
     var title = topic[0].title;
     var name = topic[0].name;
     var date = topic[0].date;
     var time = topic[0].time;
     var contents = topic[0].contents;
+    var queryData_id = queryData.id;
     var writer_email = topic[0].writer_email;
-    var hero_management = hero_management_template.HTML(title, name, date, time, contents, writer_email, queryData_id, queryData_email);
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
+
+    var hero_management = hero_management_template.HTML(header, footer, title, name, date, time, contents, writer_email, queryData_id, queryData_email);
     response.send(hero_management);
   });
 });
@@ -473,8 +456,10 @@ app.get('/hero/hero_management/password', function (request, response) {
   var queryData_email = queryData.email;
   var queryData_id = queryData.id
   var queryData_writer_email = queryData.writer_email;
+  var header = header_template.header(queryData_email);
+  var footer = footer_template.footer();
   dup = '';
-  var hero_password = hero_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, dup);
+  var hero_password = hero_password_template.HTML(header, footer, queryData_id, queryData_email, queryData_writer_email, dup);
   response.send(hero_password);
 });
 
@@ -486,25 +471,18 @@ app.post('/hero/hero_management/password_process', function (request, response) 
   var queryData_writer_email = queryData.writer_email;
   var post = request.body;
   var password = post.password;
-  console.log(queryData_email);
-  console.log(queryData_id);
-  console.log(password);
-  console.log(queryData_writer_email);
 
   db.query('SELECT * FROM user where email =?', [queryData_writer_email], function (err, rows) {
     if (err) throw err;
     if (rows.length) {
       bcrypt.compare(password, rows[0].password, function (error2, res) {
         if (res) {
-          console.log('성공');
-          response.redirect(`/hero/hero_management/update?id=${queryData_id}`);
+          response.redirect(`/hero/hero_management?id=${queryData_id}&email=${queryData_email}&writer=${queryData_writer_email}`);
         } else {
           dup = '비밀번호를 확인해주세요';
           var result = dup.fontcolor("red");
           var hero_password = hero_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, result);
           response.send(hero_password);
-          console.log(result)
-          console.log('err');
         }
       });
     }
@@ -514,19 +492,18 @@ app.post('/hero/hero_management/password_process', function (request, response) 
 //hero 관리 방수정
 app.get("/hero/hero_management/update", function (request, response) {
   var queryData = url.parse(request.url, true).query;
-
+  var queryData_email = queryData.email;
   db.query(`SELECT * FROM hero where id=?`, [queryData.id], function (error2, topic) {
+    if (error2) throw error;
     var title = topic[0].title;
     var name = topic[0].name;
     var date = topic[0].date;
     var time = topic[0].time;
     var contents = topic[0].contents;
     var queryData_id = queryData.id;
-
-    if (error2) {
-      throw error;
-    }
-    var hero_management_update = hero_management_update_template.HTML(title, name, date, time, contents, queryData_id);
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
+    var hero_management_update = hero_management_update_template.HTML(header, footer, title, name, date, time, contents, queryData_id, queryData_email);
     response.send(hero_management_update);
   });
 });
@@ -534,6 +511,7 @@ app.get("/hero/hero_management/update", function (request, response) {
 //hero 관리 방수정 프로세스
 app.post('/hero/hero_management/update_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
 
   var post = request.body;
   var title = post.update_title;
@@ -544,23 +522,20 @@ app.post('/hero/hero_management/update_process', function (request, response) {
   var queryData_id = queryData.id;
 
   db.query('UPDATE hero SET title=?, name=?, date=?, time=?, contents=? WHERE id=?', [title, name, date, time, contents, queryData_id], function (error, result) {
-    response.writeHead(302, { Location: `/hero` });
-    response.end();
-  })
+    response.redirect(`/hero?email=${queryData_email}`);
+  });
 });
 
 //hero 관리 방삭제 프로세스
 app.get('/hero/hero_management/delete_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
 
   var post = request.body;
   var queryData_id = queryData.id;
   db.query('DELETE FROM hero WHERE id = ?', [queryData_id], function (error, result) {
-    if (error) {
-      throw error;
-    }
-    response.writeHead(302, { Location: `/hero` });
-    response.end();
+    if (error) throw error;
+    response.redirect(`/hero?email=${queryData_email}`);
   });
 });
 
@@ -572,21 +547,19 @@ app.get('/team', function (request, response) {
     if (error1) throw error1;
     var user_image = users[0].image;
     if (users[0].team == null) { // 팀이 없으면 'No' Team으로 가입(insert into team (team_name, area) values('No','No');)
-      db.query(`UPDATE user SET team='No' WHERE email=?`, [queryData_email], function (error2, teams) {
+      db.query(`UPDATE user SET team='No' WHERE email=?`, [queryData_email], function (error2, teams1) {
         if (error2) throw error2;
-        var team_image = null;
-        var header = header_template.header();
-        var footer = footer_template.footer(queryData_email);
-        var team = team_template.HTML(header, footer, queryData_email, users, user_image, team_image);
+        var header = header_template.header(queryData_email);
+        var footer = footer_template.footer();
+        var team = team_template.HTML(header, footer, queryData_email, users, user_image);
         response.send(team);
       });
     } else {
       db.query(`SELECT * FROM team WHERE team_name = ?`, [users[0].team], function (error2, teams) {
         if (error2) throw error2;
-        var user_image = users[0].image;
         var team_image = teams[0].team_image;
-        var header = header_template.header();
-        var footer = footer_template.footer(queryData_email);
+        var header = header_template.header(queryData_email);
+        var footer = footer_template.footer();
         var team = team_template.HTML(header, footer, queryData_email, users, user_image, team_image);
         response.send(team);
       });
@@ -599,33 +572,25 @@ app.get('/team/team_mymember', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
   db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error, users) {
-    if (error) {
-      throw error;
-    }
-    var users_team = users[0].team; // 자신의 팀
+    if (error) throw error;
+    var users_team = users[0].team;
     db.query(`SELECT * FROM user WHERE team=?`, [users_team], function (error2, teams) {
-      if (error2) {
-        throw error;
-      }
+      if (error2) throw erro2;
       db.query(`SELECT * FROM team WHERE team_name=?`, [users_team], function (error3, team) {
-        if (error3) {
-          throw error;
-        }
-        var header = header_template.header();
-        var footer = footer_template.footer(queryData_email);
-        var list = team_mymember_template.list(teams);
-        var team_image = team[0].team_image;
-        var team_mymember = team_mymember_template.HTML(header, footer, users_team, list, team_image, queryData_email);
-        response.send(team_mymember);
+        if (error3) throw error3;
+        db.query(`SELECT count(*) from user WHERE team=?`, [users_team], function (error4, member_count){ 
+          if (error4) throw error4;
+          var header = header_template.header(queryData_email);
+          var footer = footer_template.footer();
+          var list = team_mymember_template.list(teams);
+          var team_image = team[0].team_image;
+          var count = member_count[0]['count(*)'];
+          var team_mymember = team_mymember_template.HTML(header, footer, users_team, list, team_image, count, queryData_email);
+          response.send(team_mymember);
+        });  
       });
     });
   });
-});
-
-//team 프로필
-app.get('/team/team_management_profile', function (request, response) {
-  var team_management_profile = require('./lib/team_management_profile');
-  response.send(team_management_profile);
 });
 
 //team 팀 생성하기
@@ -633,8 +598,9 @@ app.get('/team/team_make', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
   var dup = '';
-
-  var team_make = team_make_template.HTML(queryData_email,dup);
+  var header = header_template.header(queryData_email);
+  var footer = footer_template.footer();
+  var team_make = team_make_template.HTML(header, footer, queryData_email, dup);
   response.send(team_make);
 });
 
@@ -644,28 +610,19 @@ app.post('/team/team_make_process', function (request, response) {
   var queryData_email = queryData.email;
 
   var post = request.body;
-  var team_name = post.team_name; //팀명
-  var area = post.area; //지역
+  var team_name = post.team_name; 
+  var area = post.area; 
 
   db.query('SELECT * FROM team where team_name=?', [team_name], function (err, rows) {
     if (rows.length) {
-      //msg.info(team_name + '팀이 존재합니다');
-      //response.redirect(`/team/team_make?email=${queryData_email}`);
       dup = '팀이 존재합니다.';
-          var result = dup.fontcolor("red");
-          var team_make = team_make_template.HTML(queryData_email,result);
-          response.send(team_make)
+      var result = dup.fontcolor("red");
+      var team_make = team_make_template.HTML(queryData_email, result);
+      response.send(team_make)
     }
     else {
       db.query('SELECT * FROM user where email=?', [queryData_email], function (err, rows) {
-        /*if (rows[0].team) {
-          //msg.info('이미 가입된 팀이 존재합니다');
-          dup = '이미 가입된 팀이 존재합니다.';
-          var result = dup.fontcolor("red");
-          var team_make = team_make_template.HTML(result);
-          response.send(team_make)*/
-          if(err) throw err;
-        
+        if (err) throw err;
         else {
           db.query("INSERT INTO team (team_name, area) VALUES(?,?);", [team_name, area], function (err, rows) {
             if (err) throw err;
@@ -690,11 +647,15 @@ app.get('/team/team_register', function (request, response) {
 
   db.query(`SELECT * FROM team`, function (error, topics) {
     if (error) throw error;
-    var header = header_template.header();
-    var footer = footer_template.footer(queryData_email);
-    var list = team_register_template.list(topics);
-    var team_register = team_register_template.HTML(header, footer, queryData_email, list, dup);
-    response.send(team_register);
+    db.query(`SELECT count(*) from team`, function (error2, team_count) { 
+      if (error2) throw error2;
+      var header = header_template.header(queryData_email);
+      var footer = footer_template.footer();
+      var list = team_register_template.list(topics);
+      var count = team_count[0]['count(*)'];
+      var team_register = team_register_template.HTML(header, footer, queryData_email, list, dup, count);
+      response.send(team_register);
+    }); 
   });
 });
 
@@ -703,15 +664,14 @@ app.post('/team/team_register_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
   var post = request.body;
-  var team_name = post.team_name; //팀명
-  
+  var team_name = post.team_name;
 
   db.query('SELECT * FROM team where team_name=?', [team_name], function (err, topics) {
     if (!topics.length) {
       dup = '팀이 존재하지 않습니다';
       var result = dup.fontcolor("red");
-      var header = header_template.header();
-      var footer = footer_template.footer(queryData_email);
+      var header = header_template.header(queryData_email);
+      var footer = footer_template.footer();
       var list = team_register_template.list(topics);
       var team_register = team_register_template.HTML(header, footer, queryData_email, list, result)
       response.send(team_register);
@@ -720,26 +680,11 @@ app.post('/team/team_register_process', function (request, response) {
       var sql = "UPDATE user SET team=? WHERE email=?";
       var params = [team_name, queryData_email];
       db.query(sql, params, function (err, rows) {
-        if (err) { throw err; }
+        if (err) throw err; 
         response.redirect(`/team?email=${queryData_email}`);
       });
     }
   });
-});
-
-//team 관리
-app.get('/team/team_management', function (request, response) {
-  var team_make = require('./lib/team_management');
-  var post = request.body;
-  var team_name = post.team_name;
-  var area = post.area;
-  response.send(team_make);
-});
-
-//team 프로필
-app.get('/team/team_management_profile', function (request, response) {
-  var team_management_profile = require('./lib/team_management_profile');
-  response.send(team_management_profile);
 });
 
 //chat 채팅------------------------------------ 
@@ -755,11 +700,9 @@ app.get('/user', function (request, response) {
 
   db.query(`SELECT * FROM user where email=?`, [queryData_email], function (error, users) {
     var image_name = users[0].image
-    if (error) {
-      throw error;
-    }
-    var header = header_template.header();
-    var footer = footer_template.footer(queryData_email);
+    if (error) throw error;
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
     var user = user_template.HTML(header, footer, users, queryData_email, image_name);
     response.send(user);
   });
@@ -768,28 +711,27 @@ app.get('/user', function (request, response) {
 //user 수정
 app.get('/user/update', function (request, response) {
   var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
 
   db.query(`SELECT * FROM user where email=?`, [queryData.email], function (error2, users) {
+    if (error2) throw error;
     var name = users[0].name;
     var age = users[0].age;
     var team = users[0].team;
     var position = users[0].position;
     var height = users[0].height;
     var weight = users[0].weight;
-    var queryData_email = queryData.email;
-
-    if (error2) {
-      throw error;
-    }
-    var user_update = user_update_template.HTML(queryData_email, name, age, team, position, height, weight);
-    response.writeHead(200);
-    response.end(user_update);
+    var header = header_template.header(queryData_email);
+    var footer = footer_template.footer();
+    var user_update = user_update_template.HTML(header, footer, queryData_email, name, age, team, position, height, weight);
+    response.send(user_update);
   });
 });
 
 //user 수정 프로세스
 app.post('/user/update_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
+  var queryData_email = queryData.email;
 
   var post = request.body;
   var name = post.update_name;
@@ -800,19 +742,16 @@ app.post('/user/update_process', function (request, response) {
   var weight = post.update_weight;
   var queryData_email = queryData.email;
 
-  db.query('UPDATE user SET name=?, age=?, team=?, position=?, height=?, weight=? WHERE email=?',
-    [name, age, team, position, height, weight, queryData_email],
-    function (error, result) {
-      response.writeHead(302, { Location: `/user?email=${queryData_email}` });
-      response.end();
+  db.query('UPDATE user SET name=?, age=?, team=?, position=?, height=?, weight=? WHERE email=?',[name, age, team, position, height, weight, queryData_email], function (error, result) {
+    if (error) throw error;
+      response.redirect(`/user?email=${queryData_email}`);
     })
 
 });
 
 //user 로그아웃 프로세스
 app.get('/user/logout_process', function (request, response) {
-  response.writeHead(302, { Location: `/login` });
-  response.end();
+  response.redirect(`/login`);
 });
 
 app.listen(3000, function () {
