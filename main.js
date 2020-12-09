@@ -70,7 +70,6 @@ app.get('/upload', function (request, response) {
 app.post('/upload', upload.single('userfile'), function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
-  console.log(queryData_email);
   db.query(`UPDATE user SET image=? WHERE email=?;`, [request.file.filename, queryData_email], function (error, data) {
     if (error) throw error
     response.redirect(`/user?email=${queryData_email}`);
@@ -90,12 +89,10 @@ app.post('/team_upload', upload.single('userfile'), function (request, response)
   db.query(`SELECT * FROM user WHERE email=?`, [queryData_email], function (error, users) {
     if (error) throw error;
     var user_team = users[0].team;
-    console.log(user_team);
-    console.log(upload.single('userfile'));
-    // db.query(`UPDATE team SET team_image=? WHERE team_name=?;`, [request.file.filename, user_team], function (error, data) {
-    //   if (error) throw error
-    //   response.redirect(`/team/team_mymember?email=${queryData_email}`);
-    // });
+    db.query(`UPDATE team SET team_image=? WHERE team_name=?;`, [request.file.filename, user_team], function (error, data) {
+      if (error) throw error;
+      response.redirect(`/team?email=${queryData_email}`);
+    });
   });
 });
 
