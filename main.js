@@ -150,13 +150,14 @@ app.post('/login/register_process', function (request, response) {
   var email = post.email;
   var password = post.password;
   var name = post.name;
+  var gender = post.gender;
 
   bcrypt.hash(password, null, null, function (err, hash) {
     db.query("SELECT * FROM user WHERE email=?", [email], function (error1, data) {
       if (error1) throw error1;
       if (data.length == 0) {
-        var sql = "INSERT INTO user (email, password, name) VALUES(?,?,?);";
-        var params = [email, hash, name];
+        var sql = "INSERT INTO user (email, password, name, gender) VALUES(?,?,?,?);";
+        var params = [email, hash, name, gender];
         db.query(sql, params, function (error2, rows) {
           if (error2) throw error2;
           response.redirect(`/login`);
@@ -177,7 +178,7 @@ app.get('/matching', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
 
-  db.query(`SELECT * FROM matching`, function (error, topics) {
+  db.query(`select * from matching Left Join team on team.team_name = matching.team`, function (error, topics) {
     if (error) throw error;
     db.query(`SELECT count(*) from matching`, function (error2, topic) {
       if (error2) throw error2;
@@ -188,8 +189,7 @@ app.get('/matching', function (request, response) {
       var detail = matching_template.detail(topics, queryData_email);
       var matching = matching_template.HTML(header, footer, list, detail, count, queryData_email);
       response.send(matching);
-    })
-
+    });
   });
 });
 
@@ -297,7 +297,9 @@ app.post('/matching/matching_management/password_process', function (request, re
         } else {
           dup = '비밀번호를 확인해주세요';
           var result = dup.fontcolor("red");
-          var matching_password = matching_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, result);
+          var header = header_template.header(queryData_email);
+          var footer = footer_template.footer();
+          var matching_password = matching_password_template.HTML(header, footer, queryData_id, queryData_email, queryData_writer_email, result);
           response.send(matching_password);
         }
       });
@@ -360,7 +362,7 @@ app.get('/hero', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
 
-  db.query(`SELECT * FROM hero`, function (error, topics) {
+  db.query(`SELECT * FROM hero LEFT JOIN user ON user.email = hero.writer_email;`, function (error, topics) {
     if (error) throw error;
     db.query(`select count(*) from hero`, function (error, topic) {
       var count = topic[0]['count(*)'];
@@ -480,7 +482,9 @@ app.post('/hero/hero_management/password_process', function (request, response) 
         } else {
           dup = '비밀번호를 확인해주세요';
           var result = dup.fontcolor("red");
-          var hero_password = hero_password_template.HTML(queryData_id, queryData_email, queryData_writer_email, result);
+          var header = header_template.header(queryData_email);
+          var footer = footer_template.footer(); 
+          var hero_password = hero_password_template.HTML(header, footer, queryData_id, queryData_email, queryData_writer_email, result);
           response.send(hero_password);
         }
       });
@@ -557,6 +561,7 @@ app.get('/team', function (request, response) {
       db.query(`SELECT * FROM team WHERE team_name = ?`, [users[0].team], function (error2, teams) {
         if (error2) throw error2;
         var team_image = teams[0].team_image;
+        console.log(team_image);
         var header = header_template.header(queryData_email);
         var footer = footer_template.footer();
         var team = team_template.HTML(header, footer, queryData_email, users, user_image, team_image);
@@ -720,9 +725,10 @@ app.get('/user/update', function (request, response) {
     var position = users[0].position;
     var height = users[0].height;
     var weight = users[0].weight;
+    var gender = users[0].gender;
     var header = header_template.header(queryData_email);
     var footer = footer_template.footer();
-    var user_update = user_update_template.HTML(header, footer, queryData_email, name, age, team, position, height, weight);
+    var user_update = user_update_template.HTML(header, footer, queryData_email, name, age, team, position, height, weight, gender);
     response.send(user_update);
   });
 });
@@ -739,13 +745,13 @@ app.post('/user/update_process', function (request, response) {
   var position = post.update_position;
   var height = post.update_height;
   var weight = post.update_weight;
+  var gender = post.update_gender;
   var queryData_email = queryData.email;
 
-  db.query('UPDATE user SET name=?, age=?, team=?, position=?, height=?, weight=? WHERE email=?',[name, age, team, position, height, weight, queryData_email], function (error, result) {
+  db.query('UPDATE user SET name=?, age=?, team=?, position=?, height=?, weight=?, gender=? WHERE email=?',[name, age, team, position, height, weight, gender, queryData_email], function (error, result) {
     if (error) throw error;
       response.redirect(`/user?email=${queryData_email}`);
-    })
-
+  })
 });
 
 //user 로그아웃 프로세스

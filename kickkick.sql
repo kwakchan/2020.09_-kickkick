@@ -30,8 +30,8 @@ create table user(
      position varchar(4),
      height int(4),
      weight int(4),     
-     PRIMARY KEY (email),
-     FOREIGN KEY (team) REFERENCES team (team_name)
+     gender varchar(6), 
+     PRIMARY KEY (email)
      );
 
 create table team(
