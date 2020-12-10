@@ -19,7 +19,7 @@ module.exports = {
 					</div>
 					<div class="collapse navbar-collapse" id="myNavbar">
 						<ul class="nav navbar-nav pull-right">
-							<li><a href="/">Logout</a></li>
+							<li><a href="/">LOGOUT</a></li>
 							<li><a href="/matching?email=${queryData_email}">MATCHING</a></li>
 							<li><a href="/hero?email=${queryData_email}">HERO</a></li>
 							<li><a href="/team?email=${queryData_email}">TEAM</a></li>
