@@ -9,13 +9,13 @@ module.exports = {
 			 }
 			 .header {
 				overflow: hidden;
-				background-color: #f1f1f1;
+				background-color: #1680f8;
 				padding: 20px 10px;
 			 }
 			 
 			 .header a {
 				float: left;
-				color: black;
+				color: #f1f1f1;
 				text-align: center;
 				padding: 12px;
 				text-decoration: none;
@@ -25,12 +25,14 @@ module.exports = {
 			 }
 			 
 			 .header a.logo {
+				background: url("https://raw.githubusercontent.com/kimxminsu/App_kickkick/minsu/img/kickkick.png") left center no-repeat;
+				background-size: 90%;
 				font-size: 25px;
 				font-weight: bold;
 			 }
 			 
 			 .header a:hover {
-				background-color: #ddd;
+				background-color: #1680f8;
 				color: black;
 			 }
 			 
@@ -55,13 +57,12 @@ module.exports = {
 				}   
 			 }
  
- 
 		  </style>
 		  <div class="container">
 			 <nav class="navbar">
 				<ul class="nav navbar-nav pull-right">
 				   <div class="header">
-					  <a href="#default" class="logo">킥킥 KickkicK</a>
+					  <a href="#default" class="logo">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
 						 <div class="header-right">
 							<a href="/matching?email=${queryData_email}">MATCHING</a>
 							<a href="/hero?email=${queryData_email}">HERO</a>

@@ -108,7 +108,8 @@ app.get('/', function (request, response) {
 // Login 로그인
 app.get('/login', function (request, response) {
   var dup = '';
-  var login = login_template.HTML(dup);
+  var footer = footer_template.footer();
+  var login = login_template.HTML(dup, footer);
   response.send(login);
 });
 
@@ -142,7 +143,8 @@ app.post('/login', function (request, response) {
 // Login 회원가입
 app.get('/login_register', function (request, response) {
   var dup = '';
-  var register = login_register_template.HTML(dup);
+  var footer = footer_template.footer();
+  var register = login_register_template.HTML(dup, footer);
   response.send(register);
 });
 
