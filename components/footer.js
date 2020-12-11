@@ -5,15 +5,15 @@ module.exports = {
 				<div class="row">
 					<div class="col-md-4 footer__left">
 						<a class="navbar-brand" href="#"></a>
-						<p>Copyright <span>&copy;</span> Dart themes 2020</p>
+						<p>Copyright <span>&copy;</span> 2020-2 열정학기제 섬팀</p>
 					</div>
 					<div class="col-md-2 footer__link">
 						<li><a href="#">Design by Sum(island)</a></li>
 					</div>
 					<div class="col-md-2 footer__link">
-						<li><a href="#">chan, Kwak </a></li>
-						<li><a href="#">Minsu, kim</a></li>
-						<li><a href="#">SangUn, Lim</a></li>
+						<li><a href="#">Chan, Kwak </a></li>
+						<li><a href="#">Minsu, Kim</a></li>
+						<li><a href="#">Sangun, Lim</a></li>
 					</div>
 					<div class="col-md-2 footer__link">
 						<li><a href="#">Software Developer</a></li>

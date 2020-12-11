@@ -670,7 +670,7 @@ app.get('/team/team_register', function (request, response) {
 });
 
 //team 팀 가입하기 프로세스
-app.post('/team/team_register_process', function (request, response) {
+app.post('/team/team_register', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
   var post = request.body;
