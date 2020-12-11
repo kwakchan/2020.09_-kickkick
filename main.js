@@ -107,42 +107,48 @@ app.get('/', function (request, response) {
 // Login 로그인
 app.get('/login', function (request, response) {
   var dup = '';
-  var login = login_template.HTML(dup);
+  var footer = footer_template.footer();
+  var login = login_template.HTML(dup, footer);
   response.send(login);
 });
 
 // Login 로그인 process
-app.post('/login/login_process', function (request, response) {
+app.post('/login', function (request, response) {
   var post = request.body;
   var email = post.email;
   var password = post.password;
 
-  db.query('SELECT * FROM user where email=?', [email], function (error, rows) {
-    if (error) throw error;
+  db.query('SELECT * FROM user where email=?', [email], function(error, rows) { 
     if (rows.length) {
       bcrypt.compare(password, rows[0].password, function (err, res) {
         if (res) {
           response.redirect(`/user?email=${email}`);
         } else {
-          dup = '아이디와 비밀번호를 확인해주세요';
+          dup = '비밀번호를 확인해주세요';
           var result = dup.fontcolor("red");
           var login = login_template.HTML(result);
           response.send(login);
         }
       });
+    } else {
+      dup = '아이디를 확인해주세요';
+      var result = dup.fontcolor("red");
+      var login = login_template.HTML(result);
+      response.send(login);
     }
   });
 });
 
 // Login 회원가입
-app.get('/login/login_register', function (request, response) {
+app.get('/login_register', function (request, response) {
   var dup = '';
-  var register = login_register_template.HTML(dup);
+  var footer = footer_template.footer();
+  var register = login_register_template.HTML(dup, footer);
   response.send(register);
 });
 
 // Login 회원가입 프로세스
-app.post('/login/register_process', function (request, response) {
+app.post('/login_register', function (request, response) {
   var post = request.body;
   var email = post.email;
   var password = post.password;
@@ -618,7 +624,9 @@ app.post('/team/team_make_process', function (request, response) {
     if (rows.length) {
       dup = '팀이 존재합니다.';
       var result = dup.fontcolor("red");
-      var team_make = team_make_template.HTML(queryData_email, result);
+      var header = header_template.header(queryData_email);
+      var footer = footer_template.footer();
+      var team_make = team_make_template.HTML(header, footer, queryData_email, result);
       response.send(team_make)
     }
     else {
@@ -661,7 +669,7 @@ app.get('/team/team_register', function (request, response) {
 });
 
 //team 팀 가입하기 프로세스
-app.post('/team/team_register_process', function (request, response) {
+app.post('/team/team_register', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
   var post = request.body;
@@ -738,14 +746,13 @@ app.post('/user/update_process', function (request, response) {
   var post = request.body;
   var name = post.update_name;
   var age = post.update_age;
-  var team = post.update_team;
   var position = post.update_position;
   var height = post.update_height;
   var weight = post.update_weight;
   var gender = post.update_gender;
   var queryData_email = queryData.email;
 
-  db.query('UPDATE user SET name=?, age=?, team=?, position=?, height=?, weight=?, gender=? WHERE email=?',[name, age, team, position, height, weight, gender, queryData_email], function (error, result) {
+  db.query('UPDATE user SET name=?, age=?, position=?, height=?, weight=?, gender=? WHERE email=?',[name, age, position, height, weight, gender, queryData_email], function (error, result) {
     if (error) throw error;
       response.redirect(`/user?email=${queryData_email}`);
   })

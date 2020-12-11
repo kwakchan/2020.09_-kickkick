@@ -24,7 +24,7 @@ create table user(
      email varchar(30) not null,
      password  varchar(80) not null,
      name varchar(30) not null,
-     image varchar(30),
+     image varchar(100),
      age varchar(10),
      team varchar(10),
      position varchar(4),
@@ -38,7 +38,7 @@ create table team(
      team_name varchar(30) not null,
      area  varchar(30) not null,    
      hashing varchar(80),
-     team_image varchar(30),
+     team_image varchar(100),
      PRIMARY KEY (team_name)
      );    
      
