@@ -153,6 +153,7 @@ app.post('/login_register', function (request, response) {
   var post = request.body;
   var email = post.email;
   var password = post.password;
+  var password = post.password2;
   var name = post.name;
   var gender = post.gender;
 
@@ -215,7 +216,7 @@ app.post('/matching_search', function (request, response) {
   });
 });
 
-//maching 방만들기
+//matching 방만들기
 app.get('/matching/matching_make', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
@@ -228,7 +229,7 @@ app.get('/matching/matching_make', function (request, response) {
   });
 });
 
-//maching 방만들기 프로세스
+//matching 방만들기 프로세스
 app.post('/matching/create_process', function (request, response) {
   var queryData = url.parse(request.url, true).query;
   var queryData_email = queryData.email;
