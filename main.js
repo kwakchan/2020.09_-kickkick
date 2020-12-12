@@ -153,7 +153,6 @@ app.post('/login_register', function (request, response) {
   var post = request.body;
   var email = post.email;
   var password = post.password;
-  var password = post.password2;
   var name = post.name;
   var gender = post.gender;
 
