@@ -168,7 +168,7 @@ app.post('/login_register', function (request, response) {
 
         });
       } else {
-        dup = '아이디 중복입니다';
+        dup = '이미 사용중인 이메일입니다';
         var result = dup.fontcolor("red");
         var register = login_register_template.HTML(result);
         response.send(register);
