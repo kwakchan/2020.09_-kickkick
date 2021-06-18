@@ -10,3 +10,26 @@
 - 기간: 4개월
 - 팀원: 3명
 - 역할: Project Manager, 프론트&백엔드 구현
+
+
+1. 회원가입과 로그인을 통해 마이페이지에서 프로필 이미지, 키와 몸무게, 포지션을 설정할 수 있다.
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b4b56d1e-1aa3-4fc5-acaf-09eeca341a80/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b4b56d1e-1aa3-4fc5-acaf-09eeca341a80/Untitled.png)
+
+2.  새로운 팀을 만들거나 기존의 팀들을 확인하여 가입할 수 도 있습니다.
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c97be150-df30-4c65-aa38-cb995f298010/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/c97be150-df30-4c65-aa38-cb995f298010/Untitled.png)
+
+3.  팀이 소속되면 매칭을 희망하는 날짜, 시간, 연락처를 남겨 대결 희망 리스트에 추가됩니다.
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8da4dc21-63fd-4f61-a13d-5d2bf1f16721/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8da4dc21-63fd-4f61-a13d-5d2bf1f16721/Untitled.png)
+
+4. 대결 희망 리스트에서 수정, 삭제 가능합니다. 작성자 아니면 삭제할 수가 없습니다.
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/60112973-c29f-4ea6-911f-21e1f8b8a28c/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/60112973-c29f-4ea6-911f-21e1f8b8a28c/Untitled.png)
+
+5.  일일 용병 페이지에서 기존팀이 아니더라도 다른 대결에도 참여할 수 있습니다.
+
+또한 수정, 삭제가 가능합니다.
+
+![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5a327508-bc5d-445d-a1cf-e703dee5dbae/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5a327508-bc5d-445d-a1cf-e703dee5dbae/Untitled.png)
