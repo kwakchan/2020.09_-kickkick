@@ -14,7 +14,7 @@
 
 1. 회원가입과 로그인을 통해 마이페이지에서 프로필 이미지, 키와 몸무게, 포지션을 설정할 수 있다.
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b4b56d1e-1aa3-4fc5-acaf-09eeca341a80/Untitled.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/b4b56d1e-1aa3-4fc5-acaf-09eeca341a80/Untitled.png)
+![1](https://user-images.githubusercontent.com/59990712/122603780-d9641080-d0af-11eb-97cf-2b3386eb382a.png)
 
 2.  새로운 팀을 만들거나 기존의 팀들을 확인하여 가입할 수 도 있습니다.
 
